@@ -160,7 +160,7 @@ export const defaultStore = markRaw(new Storage('base', {
 	},
 	animatedMfm: {
 		where: 'device',
-		default: false,
+		default: true, // Shrimpia (false -> true)
 	},
 	advancedMfm: {
 		where: 'device',
@@ -278,10 +278,35 @@ export const defaultStore = markRaw(new Storage('base', {
 		where: 'device',
 		default: false,
 	},
-	cjpButton: {
+	cjpButton:  {
 		where: 'device',
 		default: false,
 	},
+	showPostFormPreview: {
+		where: 'device',
+		default: false,
+	},
+	useDefaultNoteVisibilityOnRenote: {
+		where: 'account',
+		default: false,
+	},
+	defaultRenoteVisibility: {
+		where: 'account',
+		default: 'public',
+	},
+	defaultRenoteLocalOnly: {
+		where: 'account',
+		default: false,
+	},
+	defaultNumberQuoteVisibility: {
+		where: 'account',
+		default: 'inherits',
+	},
+	defaultNumberQuoteLocalOnly: {
+		where: 'account',
+		default: false,
+	},
+	// #endregion
 }));
 
 // TODO: 他のタブと永続化されたstateを同期
