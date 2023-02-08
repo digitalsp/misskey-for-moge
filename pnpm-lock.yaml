@@ -382,6 +382,7 @@ importers:
       '@types/glob': 8.0.1
       '@types/gulp': 4.0.10
       '@types/gulp-rename': 2.0.1
+      '@types/katex': ^0.16.0
       '@types/matter-js': 0.18.2
       '@types/node': 18.13.0
       '@types/punycode': 2.1.0
@@ -424,6 +425,7 @@ importers:
       insert-text-at-cursor: 0.3.0
       is-file-animated: 1.0.2
       json5: 2.2.3
+      katex: ^0.16.4
       matter-js: 0.18.0
       mfm-js: 0.23.3
       misskey-js: 0.0.15
@@ -465,6 +467,7 @@ importers:
       '@rollup/pluginutils': 5.0.2_rollup@3.14.0
       '@syuilo/aiscript': 0.12.4
       '@tabler/icons-webfont': 2.2.0
+      '@types/katex': 0.16.0
       '@vitejs/plugin-vue': 4.0.0_vite@4.1.1+vue@3.2.47
       '@vue/compiler-sfc': 3.2.47
       autobind-decorator: 2.4.0
@@ -489,6 +492,7 @@ importers:
       insert-text-at-cursor: 0.3.0
       is-file-animated: 1.0.2
       json5: 2.2.3
+      katex: 0.16.4
       matter-js: 0.18.0
       mfm-js: 0.23.3
       misskey-js: 0.0.15
@@ -2643,6 +2647,10 @@ packages:
     resolution: {integrity: sha512-M2Et4hgTigFoArTu6ylK3hYFEH+UuXfgFXRXZ+flpCfux8j7fQ2D+0zEwiu6ehx0h5otaauhLSFzMzEtNA784A==}
     dev: true
 
+  /@types/katex/0.16.0:
+    resolution: {integrity: sha512-hz+S3nV6Mym5xPbT9fnO8dDhBFQguMYpY0Ipxv06JMi1ORgnEM4M1ymWDUhUNer3ElLmT583opRo4RzxKmh9jw==}
+    dev: false
+
   /@types/keyv/3.1.4:
     resolution: {integrity: sha512-BQ5aZNSCpj7D6K2ksrRCTmKRLEpnPvWDiLPfoGyhZ++8YtiK9d/3DBKPJgry359X/P1PfruyYwvnvwFjuEiEIg==}
     dependencies:
@@ -4662,6 +4670,11 @@ packages:
     resolution: {integrity: sha512-QrWXB+ZQSVPmIWIhtEO9H+gwHaMGYiF5ChvoJ+K9ZGHG/sVsa6yiesAD1GC/x46sET00Xlwo1u49RVVVzvcSkw==}
     engines: {node: '>= 10'}
     dev: true
+
+  /commander/8.3.0:
+    resolution: {integrity: sha512-OkTL9umf+He2DZkUq8f8J9of7yL6RJKI24dVITBmNfZBmri9zYZQrKkuXiKhyfPSu8tUhnVBB1iKXevvnlR4Ww==}
+    engines: {node: '>= 12'}
+    dev: false
 
   /commander/9.5.0:
     resolution: {integrity: sha512-KRs7WVDKg86PWiuAqhDrAQnTXZKraVcCc6vFdL14qrZ/DcWwuRo7VoiYXalXO7S5GKpqYiVEwCbgFDfxNHKJBQ==}
@@ -8832,6 +8845,13 @@ packages:
     dependencies:
       jwa: 2.0.0
       safe-buffer: 5.2.1
+    dev: false
+
+  /katex/0.16.4:
+    resolution: {integrity: sha512-WudRKUj8yyBeVDI4aYMNxhx5Vhh2PjpzQw1GRu/LVGqL4m1AxwD1GcUp0IMbdJaf5zsjtj8ghP0DOQRYhroNkw==}
+    hasBin: true
+    dependencies:
+      commander: 8.3.0
     dev: false
 
   /keygrip/1.1.0:
