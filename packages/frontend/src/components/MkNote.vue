@@ -110,6 +110,9 @@
 				<button ref="menuButton" :class="$style.footerButton" class="_button" @mousedown="menu()">
 					<i class="ti ti-dots"></i>
 				</button>
+				<button v-if="appearNote.text" ref="stealButton" :class="$style.footerButton" class="_button" @mousedown="stealMenu(appearNote, stealButton)">
+					<i class="ti ti-swipe"></i>
+				</button>
 			</footer>
 		</div>
 	</article>
@@ -153,12 +156,10 @@ import { getNoteMenu } from '@/scripts/get-note-menu';
 import { useNoteCapture } from '@/scripts/use-note-capture';
 import { deepClone } from '@/scripts/clone';
 import { useTooltip } from '@/scripts/use-tooltip';
-import { getTextLastNumeric, getTextWithoutEndingNumeric } from '@/scripts/get-note-last-numeric';
-import { playFile } from '@/scripts/sound';
 import { claimAchievement } from '@/scripts/achievements';
 import { getNoteSummary } from '@/scripts/get-note-summary';
 import { shownNoteIds } from '@/os';
-import { MenuItem } from '@/types/menu';
+import { stealMenu } from '@/scripts/steal-menu';
 
 const props = defineProps<{
 	note: misskey.entities.Note;
@@ -192,6 +193,7 @@ const menuButton = shallowRef<HTMLElement>();
 const renoteButton = shallowRef<HTMLElement>();
 const renoteTime = shallowRef<HTMLElement>();
 const reactButton = shallowRef<HTMLElement>();
+const stealButton = shallowRef<HTMLElement>(); // shrimpia
 let appearNote = $computed(() => isRenote ? note.renote as misskey.entities.Note : note);
 const isMyRenote = $i && ($i.id === note.userId);
 const showContent = ref(false);
@@ -250,34 +252,7 @@ useTooltip(renoteButton, async (showing) => {
 
 function renote(viaKeyboard = false) {
 	pleaseLogin();
-	const nextNumeric = getTextLastNumeric(appearNote.text ?? '') + 1;
-	const nextNumericOnesPlace = nextNumeric % 10;
-
-	let items = [] as MenuItem[];
-
-	if (appearNote.channel) {
-		items = items.concat([{
-			text: i18n.ts.inChannelRenote,
-			icon: 'ti ti-repeat',
-			action: () => {
-				os.api('notes/create', {
-					renoteId: appearNote.id,
-					channelId: appearNote.channelId,
-				});
-			},
-		}, {
-			text: i18n.ts.inChannelQuote,
-			icon: 'ti ti-quote',
-			action: () => {
-				os.post({
-					renote: appearNote,
-					channel: appearNote.channel,
-				});
-			},
-		}, null]);
-	}
-
-	items = items.concat([{
+	os.popupMenu([{
 		text: i18n.ts.renote,
 		icon: 'ti ti-repeat',
 		action: () => {
@@ -303,48 +278,7 @@ function renote(viaKeyboard = false) {
 				renote: appearNote,
 			});
 		},
-	}, null, {
-		icon: `ti ti-box-multiple-${Math.abs(nextNumericOnesPlace)}`,
-		text: '数字引用',
-		action: () => {
-			if (!appearNote.text) return;
-			let baseText = getTextWithoutEndingNumeric(appearNote.text);
-			if (baseText.endsWith('</center>')) baseText += '\n';
-			const visibility = defaultStore.state.defaultNumberQuoteVisibility === 'inherits'
-				? appearNote.visibility 
-				: defaultStore.state.defaultNumberQuoteVisibility;
-			const localOnly = defaultStore.state.defaultNumberQuoteVisibility === 'inherits'
-				? appearNote.localOnly 
-				: defaultStore.state.defaultNumberQuoteLocalOnly;
-			os.api('notes/create', {
-				text: baseText + nextNumeric,
-				visibility: visibility as never,
-				localOnly,
-			}).then(() => {
-				if (nextNumericOnesPlace !== 4) return;
-				playFile('shrimpia/4', 0.5);
-			});
-		},
-	}, {
-		icon: 'ti ti-swipe',
-		text: 'パクる',
-		action: () => {
-			if (!appearNote.text) return;
-			const visibility = defaultStore.state.defaultNumberQuoteVisibility === 'inherits'
-				? appearNote.visibility 
-				: defaultStore.state.defaultNumberQuoteVisibility;
-			const localOnly = defaultStore.state.defaultNumberQuoteVisibility === 'inherits'
-				? appearNote.localOnly 
-				: defaultStore.state.defaultNumberQuoteLocalOnly;
-			os.api('notes/create', {
-				text: appearNote.text,
-				visibility: visibility as never,
-				localOnly,
-			});
-		},
-	}]);
-
-	os.popupMenu(items, renoteButton.value, {
+	}], renoteButton.value, {
 		viaKeyboard,
 	});
 }
@@ -713,7 +647,7 @@ function showReactions(): void {
 	opacity: 0.7;
 
 	&:not(:last-child) {
-		margin-right: 28px;
+		margin-right: 22px;
 	}
 
 	&:hover {
@@ -767,7 +701,7 @@ function showReactions(): void {
 @container (max-width: 350px) {
 	.footerButton {
 		&:not(:last-child) {
-			margin-right: 18px;
+			margin-right: 12px;
 		}
 	}
 }
@@ -780,7 +714,7 @@ function showReactions(): void {
 
 	.footerButton {
 		&:not(:last-child) {
-			margin-right: 12px;
+			margin-right: 8px;
 		}
 	}
 }
