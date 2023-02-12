@@ -21,8 +21,11 @@
 				<span v-if="visibility === 'specified'"><i class="ti ti-mail"></i></span>
 			</button>
 			<button v-tooltip="i18n.ts.previewNoteText" class="_button" :class="[$style.previewButton, { [$style.previewButtonActive]: showPreview }]" @click="showPreview = !showPreview"><i class="ti ti-eye"></i></button>
+			<button v-click-anime class="_button" :class="$style.submit" :disabled="!textLength" data-cy-open-post-form-submit @click="cjp">
+				<div style="background: red;" :class="$style.submitInner">怪</div>
+			</button>
 			<button v-click-anime class="_button" :class="[$style.submit, { [$style.submitPosting]: posting }]" :disabled="!canPost" data-cy-open-post-form-submit @click="post">
-				<div :class="$style.submitInner">
+				<div :class="$style.submitInner" style="min-width: 90px;">
 					<template v-if="posted"></template>
 					<template v-else-if="posting"><MkEllipsis/></template>
 					<template v-else>{{ submitText }}</template>
@@ -99,6 +102,7 @@ import { deepClone } from '@/scripts/clone';
 import MkRippleEffect from '@/components/MkRippleEffect.vue';
 import { miLocalStorage } from '@/local-storage';
 import { claimAchievement } from '@/scripts/achievements';
+import { generate } from 'cjp';
 
 const modal = inject('modal');
 
@@ -696,6 +700,10 @@ async function post(ev?: MouseEvent) {
 	});
 }
 
+function cjp() {
+	text = generate(text);
+}
+
 function cancel() {
 	emit('cancel');
 }
@@ -910,7 +918,6 @@ defineExpose({
 	font-weight: bold;
 	border-radius: 4px;
 	font-size: 0.9em;
-	min-width: 90px;
 	box-sizing: border-box;
 	color: var(--fgOnAccent);
 	background: linear-gradient(90deg, var(--buttonGradateA), var(--buttonGradateB));
