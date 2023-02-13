@@ -50,9 +50,9 @@
 				</div>
 			</MkFolder>
 
-			<MkSwitch v-model="useDefaultNoteVisibilityOnRenote" @update:model-value="save()">Renoteにデフォルトの公開範囲を適用する <span class="_beta">Shrimpia</span></MkSwitch>
+			<MkSwitch v-model="useDefaultNoteVisibilityOnRenote" @update:model-value="save()">Renoteにデフォルトの公開範囲を適用する</MkSwitch>
 			<MkFolder v-if="!useDefaultNoteVisibilityOnRenote">
-				<template #label>{{ i18n.ts.defaultNoteVisibility }} (Renote) <span class="_beta">Shrimpia</span></template>
+				<template #label>{{ i18n.ts.defaultNoteVisibility }} (Renote)  </template>
 				<template v-if="defaultRenoteVisibility === 'public'" #suffix>{{ i18n.ts._visibility.public }}</template>
 				<template v-else-if="defaultRenoteVisibility === 'home'" #suffix>{{ i18n.ts._visibility.home }}</template>
 				<template v-else-if="defaultRenoteVisibility === 'followers'" #suffix>{{ i18n.ts._visibility.followers }}</template>
@@ -70,7 +70,7 @@
 			</MkFolder>
 
 			<MkFolder>
-				<template #label>{{ i18n.ts.defaultNoteVisibility }} (数字引用 / パクる) <span class="_beta">Shrimpia</span></template>
+				<template #label>{{ i18n.ts.defaultNoteVisibility }} (数字引用 / パクる)</template>
 				<template v-if="defaultNumberQuoteVisibility === 'inherits'" #suffix>元のノートに合わせる</template>
 				<template v-if="defaultNumberQuoteVisibility === 'public'" #suffix>{{ i18n.ts._visibility.public }}</template>
 				<template v-else-if="defaultNumberQuoteVisibility === 'home'" #suffix>{{ i18n.ts._visibility.home }}</template>
