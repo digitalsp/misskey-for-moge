@@ -26,7 +26,6 @@
 		"chartjs-chart-matrix": "2.0.1",
 		"chartjs-plugin-gradient": "0.6.1",
 		"chartjs-plugin-zoom": "2.0.0",
-		"cjp": "^2.3.0",
 		"compare-versions": "5.0.1",
 		"cropperjs": "2.0.0-beta.2",
 		"date-fns": "2.29.3",
