@@ -5,6 +5,7 @@ import { Note } from "misskey-js/built/entities";
 import { getTextLastNumeric, getTextWithoutEndingNumeric } from "./get-note-last-numeric";
 import { pleaseLogin } from "./please-login";
 import { playFile } from "./sound";
+import { generate } from "cjp";
 
 
 // #region shrimpia
@@ -97,6 +98,39 @@ export function stealMenu(note: Note, el: HTMLElement) {
 				initialVisibility: visibility,
 				initialLocalOnly: localOnly,
 				instant: true,
+			});
+		},
+	}, {
+		icon: 'ti ti-language-katakana',
+		text: '怪レい日本语でパクる',
+		action: async () => {
+			if (!note.text) return;
+			if (!defaultStore.state.stealConfirmed) {
+				const {canceled} = await confirm({
+					type: 'warning',
+					text: 'このノートをパクります。本文をコピーして投稿するため、相手に迷惑がかからないことを確認する必要があります。\n本当に投稿しますか？',
+				})
+				if (canceled) return;
+			}
+			defaultStore.set('stealConfirmed', true);
+			if (note.visibility === 'followers' || note.visibility === 'specified') {
+				const {canceled} = await confirm({
+					type: 'warning',
+					text: `このノートは公開範囲を「${i18n.ts._visibility[note.visibility]}」に設定しているため、パクるべきではないかもしれません。それでも続行しますか？`,
+				})
+				if (canceled) return
+			}
+			const visibility = defaultStore.state.defaultNumberQuoteVisibility === 'inherits'
+				? note.visibility 
+				: defaultStore.state.defaultNumberQuoteVisibility;
+			const localOnly = defaultStore.state.defaultNumberQuoteVisibility === 'inherits'
+				? note.localOnly 
+				: defaultStore.state.defaultNumberQuoteLocalOnly;
+			const cjpText = generate(note.text);
+			api('notes/create', {
+				text: cjpText,
+				visibility: visibility as never,
+				localOnly,
 			});
 		},
 	}], el);
