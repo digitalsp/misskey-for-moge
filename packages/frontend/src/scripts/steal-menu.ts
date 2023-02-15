@@ -5,7 +5,7 @@ import { Note } from "misskey-js/built/entities";
 import { getTextLastNumeric, getTextWithoutEndingNumeric } from "./get-note-last-numeric";
 import { pleaseLogin } from "./please-login";
 import { playFile } from "./sound";
-import { generate } from "cjp";
+import { generate } from "@/scripts/cjp";
 
 
 // #region shrimpia

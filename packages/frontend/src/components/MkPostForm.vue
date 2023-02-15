@@ -102,7 +102,7 @@ import { deepClone } from '@/scripts/clone';
 import MkRippleEffect from '@/components/MkRippleEffect.vue';
 import { miLocalStorage } from '@/local-storage';
 import { claimAchievement } from '@/scripts/achievements';
-import { generate } from 'cjp';
+import { generate } from '@/scripts/cjp';
 
 const modal = inject('modal');
 
