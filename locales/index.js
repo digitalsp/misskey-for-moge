@@ -24,6 +24,7 @@ const languages = [
 	'id-ID',
 	'it-IT',
 	'ja-JP',
+	'ja-CJP',
 	'ja-KS',
 	'kab-KAB',
 	'kn-IN',
@@ -58,6 +59,7 @@ module.exports = Object.entries(locales)
 		const [lang] = k.split('-');
 		switch (k) {
 			case 'ja-JP': return v;
+			case 'ja-CJP':
 			case 'ja-KS':
 			case 'en-US': return merge(locales['ja-JP'], v);
 			default: return merge(
