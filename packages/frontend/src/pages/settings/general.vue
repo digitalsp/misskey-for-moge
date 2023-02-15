@@ -162,6 +162,8 @@ const enableInfiniteScroll = computed(defaultStore.makeGetterSetter('enableInfin
 const useReactionPickerForContextMenu = computed(defaultStore.makeGetterSetter('useReactionPickerForContextMenu'));
 const squareAvatars = computed(defaultStore.makeGetterSetter('squareAvatars'));
 const aiChanMode = computed(defaultStore.makeGetterSetter('aiChanMode'));
+const cjpButton = computed(defaultStore.makeGetterSetter('cjpButton'));
+const stealButton = computed(defaultStore.makeGetterSetter('stealButton'));
 
 watch(lang, () => {
 	miLocalStorage.setItem('lang', lang.value as string);
