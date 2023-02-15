@@ -409,7 +409,6 @@ importers:
       chartjs-chart-matrix: 2.0.1
       chartjs-plugin-gradient: 0.6.1
       chartjs-plugin-zoom: 2.0.0
-      cjp: ^2.3.0
       compare-versions: 5.0.1
       cropperjs: 2.0.0-beta.2
       cross-env: 7.0.3
@@ -481,7 +480,6 @@ importers:
       chartjs-chart-matrix: 2.0.1_chart.js@4.2.0
       chartjs-plugin-gradient: 0.6.1_chart.js@4.2.0
       chartjs-plugin-zoom: 2.0.0_chart.js@4.2.0
-      cjp: 2.3.0
       compare-versions: 5.0.1
       cropperjs: 2.0.0-beta.2
       date-fns: 2.29.3
@@ -4402,10 +4400,6 @@ packages:
     resolution: {integrity: sha512-4jYS4MOAaCIStSRwiuxc4B8MYhIe676yO1sYGzARnjXkWpmzZMMYxY6zu8WYWDhSuth5zhrQ1rhNSibyyvv4/w==}
     engines: {node: '>=8'}
     dev: true
-
-  /cjp/2.3.0:
-    resolution: {integrity: sha512-BZ95TJneuWqbPFDC68vZg2VzQieJhbaxIM7Z3Ds3c+qHI1+7watcUL5eIQAGmShMvKnTbqJD/pLXSANScyxgFA==}
-    dev: false
 
   /cjs-module-lexer/1.2.2:
     resolution: {integrity: sha512-cOU9usZw8/dXIXKtwa8pM0OTJQuJkxMN6w30csNRUerHfeQ5R6U3kkU/FtJeIf3M202OHfY2U8ccInBG7/xogA==}
