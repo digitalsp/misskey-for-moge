@@ -314,6 +314,10 @@ export const defaultStore = markRaw(new Storage('base', {
 		where: 'account',
 		default: false,
 	},
+	stealButton: {
+		where: 'device',
+		default: false,
+	},
 	// #endregion
 }));
 

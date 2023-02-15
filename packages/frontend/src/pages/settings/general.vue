@@ -58,6 +58,7 @@
 				<MkSwitch v-model="useSystemFont">{{ i18n.ts.useSystemFont }}</MkSwitch>
 				<MkSwitch v-model="disableDrawer">{{ i18n.ts.disableDrawer }}</MkSwitch>
 				<MkSwitch v-model="cjpButton">怪レい日本语ボタンを表示</MkSwitch>
+				<MkSwitch v-model="stealButton">パクるボタンを表示</MkSwitch>
 			</div>
 			<div>
 				<MkRadios v-model="emojiStyle">
@@ -162,6 +163,7 @@ const useReactionPickerForContextMenu = computed(defaultStore.makeGetterSetter('
 const squareAvatars = computed(defaultStore.makeGetterSetter('squareAvatars'));
 const aiChanMode = computed(defaultStore.makeGetterSetter('aiChanMode'));
 const cjpButton = computed(defaultStore.makeGetterSetter('cjpButton'));
+const stealButton = computed(defaultStore.makeGetterSetter('stealButton'));
 
 watch(lang, () => {
 	miLocalStorage.setItem('lang', lang.value as string);
