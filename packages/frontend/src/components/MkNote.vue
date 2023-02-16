@@ -282,10 +282,12 @@ function renote(viaKeyboard = false) {
 	  text: '引用してノート',
 	  icon: 'ti ti-quote',
 	  action: () => {
-	    const quoteText = '>' + note.text.replace(/\r?\n/g, '\n>') + '\n';
-			os.post({
-				initialText: quoteText;
-			});
+			if (note.text != null) {
+				const quoteText = '>' + note.text.replace(/\r?\n/g, '\n>') + '\n';
+				os.post({
+					initialText: quoteText,
+				});
+			}
 	  },
 	}], renoteButton.value, {
 		viaKeyboard,
