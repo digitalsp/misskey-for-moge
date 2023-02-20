@@ -1,6 +1,6 @@
 <template>
 <div
-	:class="[$style.root, { [$style.modal]: modal, _popup: modal }]"
+	:class="[$style.root, { [$style.modal]: modal, _popup: modal, [$style.fullWindow]: $store.reactiveState.fullWindowPostForm.value }, ]"
 	@dragover.stop="onDragover"
 	@dragenter="onDragenter"
 	@dragleave="onDragleave"
@@ -34,7 +34,7 @@
 			</button>
 		</div>
 	</header>
-	<div :class="[$style.form]">
+	<div :class="$style.form">
 		<MkNoteSimple v-if="reply" :class="$style.targetNote" :note="reply"/>
 		<MkNoteSimple v-if="renote" :class="$style.targetNote" :note="renote"/>
 		<div v-if="quoteId" :class="$style.withQuote"><i class="ti ti-quote"></i> {{ i18n.ts.quoteAttached }}<button @click="quoteId = null"><i class="ti ti-x"></i></button></div>
@@ -1076,6 +1076,45 @@ defineExpose({
 		font-size: 14px;
 		width: 44px;
 		height: 44px;
+	}
+}
+@media screen and (max-width: 600px) {
+	.root.modal.fullWindow {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100vw;
+		height: 100vh;
+		height: 100dvh;
+		background-color: var(--bg);
+		border-radius: 0;
+
+		> .form {
+			height: calc(100% - 66px);
+			width: 100%;
+			display: flex;
+			flex-direction: column;
+			padding: 0 16px;
+			box-sizing: border-box;
+
+			> textarea.text {
+				background-color: var(--popup);
+				min-width: none;
+				border-radius: 14px;
+				padding: 16px;
+				margin-bottom: 8px;
+				flex-grow: 1;
+				resize: none;
+				min-height: 30vh;
+			}
+
+			> :not(textare) {
+				flex-grow: 0;
+				padding-left: 0;
+				padding-right: 0;
+				border: 0;
+			}
+		}
 	}
 }
 </style>
