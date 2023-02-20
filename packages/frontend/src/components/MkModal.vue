@@ -409,7 +409,7 @@ defineExpose({
 			overflow: auto;
 			display: flex;
 
-			@media (max-width: 500px) {
+			@media (max-width: 600px) {
 				padding: 16px;
 				-webkit-mask-image: none;
 				mask-image: none;

@@ -1086,6 +1086,7 @@ defineExpose({
 		width: 100vw;
 		height: 100vh;
 		height: 100dvh;
+		max-width: none;
 		background-color: var(--bg);
 		border-radius: 0;
 
