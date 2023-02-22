@@ -1741,6 +1741,7 @@ _timelines:
   home: "ホーム"
   local: "ローカル"
   social: "ソーシャル"
+  media: "メディア"
   global: "グローバル"
 
 _play:

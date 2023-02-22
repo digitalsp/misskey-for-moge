@@ -133,7 +133,7 @@ const headerTabs = $computed(() => [{
 	iconOnly: true,
 }, {
 	key: 'media',
-	title: 'メディア',
+	title: i18n.ts._timelines.media,
 	icon: 'ti ti-photo',
 	iconOnly: true,
 }] : []), ...(isGlobalTimelineAvailable ? [{

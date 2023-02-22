@@ -1692,6 +1692,7 @@ _timelines:
   home: "Home"
   local: "Local"
   social: "Social"
+  media: "Media"
   global: "Global"
 _play:
   new: "Create Play"
