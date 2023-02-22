@@ -81,6 +81,13 @@ if (props.src === 'antenna') {
 	endpoint = 'notes/hybrid-timeline';
 	connection = stream.useChannel('hybridTimeline');
 	connection.on('note', prepend);
+} else if (props.src === 'media') {
+	endpoint = 'notes/hybrid-timeline';
+	query = {
+		withFiles: true
+	}
+	connection = stream.useChannel('mediaTimeline');
+	connection.on('note', prepend);
 } else if (props.src === 'global') {
 	endpoint = 'notes/global-timeline';
 	connection = stream.useChannel('globalTimeline');
