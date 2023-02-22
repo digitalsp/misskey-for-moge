@@ -1,6 +1,5 @@
-import { defineAsyncComponent, Ref, inject } from 'vue';
+import { defineAsyncComponent, Ref } from 'vue';
 import * as misskey from 'misskey-js';
-import { pleaseLogin } from './please-login';
 import { claimAchievement } from './achievements';
 import { getTextLastNumeric, getTextWithoutEndingNumeric } from './get-note-last-numeric';
 import { playFile } from './sound';
@@ -11,7 +10,6 @@ import * as os from '@/os';
 import copyToClipboard from '@/scripts/copy-to-clipboard';
 import { url } from '@/config';
 import { noteActions } from '@/store';
-import { notePage } from '@/filters/note';
 import { miLocalStorage } from '@/local-storage';
 
 export function getNoteMenu(props: {
@@ -204,7 +202,7 @@ export function getNoteMenu(props: {
 		props.translating.value = true;
 		const res = await os.api('notes/translate', {
 			noteId: appearNote.id,
-			targetLang: miLocalStorage.getItem('lang') || navigator.language,
+			targetLang: miLocalStorage.getItem('lang') ?? navigator.language,
 		});
 		props.translating.value = false;
 		props.translation.value = res;
@@ -244,7 +242,7 @@ export function getNoteMenu(props: {
 				icon: 'ti ti-external-link',
 				text: i18n.ts.showOnRemote,
 				action: () => {
-					window.open(appearNote.url || appearNote.uri, '_blank');
+					window.open(appearNote.url ?? appearNote.uri, '_blank');
 				},
 			} : undefined,
 			{
@@ -294,7 +292,7 @@ export function getNoteMenu(props: {
 		...($i.isModerator || $i.isAdmin ? [
 			null,
 			{
-				icon: 'fas fa-bullhorn',
+				icon: 'ti ti-speakerphone',
 				text: i18n.ts.promote,
 				action: promote
 			}]
@@ -306,7 +304,7 @@ export function getNoteMenu(props: {
 					icon: 'ti ti-exclamation-circle',
 					text: i18n.ts.reportAbuse,
 					action: () => {
-						const u = appearNote.url || appearNote.uri || `${url}/notes/${appearNote.id}`;
+						const u = appearNote.url ?? appearNote.uri ?? `${url}/notes/${appearNote.id}`;
 						os.popup(defineAsyncComponent(() => import('@/components/MkAbuseReportWindow.vue')), {
 							user: appearNote.user,
 							initialComment: `Note: ${u}\n-----\n`,
@@ -349,7 +347,7 @@ export function getNoteMenu(props: {
 			icon: 'ti ti-external-link',
 			text: i18n.ts.showOnRemote,
 			action: () => {
-				window.open(appearNote.url || appearNote.uri, '_blank');
+				window.open(appearNote.url ?? appearNote.uri, '_blank');
 			},
 		} : undefined]
 			.filter(x => x !== undefined);
