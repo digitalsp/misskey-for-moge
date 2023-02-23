@@ -73,7 +73,7 @@ class MediaTimelineChannel extends Channel {
 			}
 		}
 
-		if (!note.files.length) return;
+		if (!note.files?.length) return;
 
 		// Ignore notes from instances the user has muted
 		if (isInstanceMuted(note, new Set<string>(this.userProfile?.mutedInstances ?? []))) return;
