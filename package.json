@@ -1,6 +1,6 @@
 {
 	"name": "misskey",
-	"version": "13.7.1-flestudio-v1.2.0",
+	"version": "13.7.2-flestudio-v1.2.0",
 	"codename": "nasubi",
 	"repository": {
 		"type": "git",
