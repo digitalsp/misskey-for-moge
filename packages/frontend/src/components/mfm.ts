@@ -8,6 +8,7 @@ import MkCustomEmoji from '@/components/global/MkCustomEmoji.vue';
 import MkCode from '@/components/MkCode.vue';
 import MkGoogle from '@/components/MkGoogle.vue';
 import MkSparkle from '@/components/MkSparkle.vue';
+import MkFormula from '@/components/MkFormula.vue'
 import MkA from '@/components/global/MkA.vue';
 import { host } from '@/config';
 import { defaultStore } from '@/store';
