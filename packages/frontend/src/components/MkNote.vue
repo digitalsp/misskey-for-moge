@@ -251,30 +251,37 @@ useTooltip(renoteButton, async (showing) => {
 
 function renote(viaKeyboard = false) {
 	pleaseLogin();
-	os.popupMenu([{
+
+	let items = [] as MenuItem[];
+
+	if (appearNote.channel) {
+		items = items.concat([{
+			text: i18n.ts.inChannelRenote,
+			icon: 'ti ti-repeat',
+			action: () => {
+				os.api('notes/create', {
+					renoteId: appearNote.id,
+					channelId: appearNote.channelId,
+				});
+			},
+		}, {
+			text: i18n.ts.inChannelQuote,
+			icon: 'ti ti-quote',
+			action: () => {
+				os.post({
+					renote: appearNote,
+					channel: appearNote.channel,
+				});
+			},
+		}, null]);
+	}
+
+	items = items.concat([{
 		text: i18n.ts.renote,
 		icon: 'ti ti-repeat',
 		action: () => {
-			const visibility = defaultStore.state.useDefaultNoteVisibilityOnRenote ? (
-				defaultStore.state.rememberNoteVisibility ? defaultStore.state.visibility : defaultStore.state.defaultNoteVisibility
-			) : defaultStore.state.defaultRenoteVisibility;
-
-			const localOnly = defaultStore.state.useDefaultNoteVisibilityOnRenote ? (
-				defaultStore.state.rememberNoteVisibility ? defaultStore.state.localOnly : defaultStore.state.defaultNoteLocalOnly
-			) : defaultStore.state.defaultRenoteLocalOnly;
-
 			os.api('notes/create', {
 				renoteId: appearNote.id,
-				visibility: visibility as never,
-				localOnly,
-			});
-		},
-	}, {
-		text: i18n.ts.quote,
-		icon: 'ti ti-quote',
-		action: () => {
-			os.post({
-				renote: appearNote,
 			});
 		},
 	}, {
@@ -671,9 +678,17 @@ function showReactions(): void {
 	opacity: 0.7;
 }
 
-@container (max-width: 500px) {
+@container (max-width: 580px) {
 	.root {
-		font-size: 0.9em;
+		font-size: 0.95em;
+	}
+
+	.renote {
+		padding: 12px 26px 0 26px;
+	}
+
+	.article {
+		padding: 24px 26px 14px;
 	}
 
 	.avatar {
@@ -682,7 +697,21 @@ function showReactions(): void {
 	}
 }
 
-@container (max-width: 450px) {
+@container (max-width: 500px) {
+	.root {
+		font-size: 0.9em;
+	}
+
+	.renote {
+		padding: 10px 22px 0 22px;
+	}
+
+	.article {
+		padding: 20px 22px 12px;
+	}
+}
+
+@container (max-width: 480px) {
 	.renote {
 		padding: 8px 16px 0 16px;
 	}
@@ -699,12 +728,22 @@ function showReactions(): void {
 	.article {
 		padding: 14px 16px 9px;
 	}
+}
 
+@container (max-width: 450px) {
 	.avatar {
 		margin: 0 10px 8px 0;
 		width: 46px;
 		height: 46px;
 		top: calc(14px + var(--stickyTop, 0px));
+	}
+}
+
+@container (max-width: 400px) {
+	.footerButton {
+		&:not(:last-child) {
+			margin-right: 12px;
+		}
 	}
 }
 

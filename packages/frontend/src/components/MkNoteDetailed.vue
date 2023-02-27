@@ -255,7 +255,7 @@ function renote(viaKeyboard = false) {
 			text: i18n.ts.inChannelRenote,
 			icon: 'ti ti-repeat',
 			action: () => {
-				os.api('notes/create', {
+				os.apiWithDialog('notes/create', {
 					renoteId: appearNote.id,
 					channelId: appearNote.channelId,
 				});
@@ -284,7 +284,7 @@ function renote(viaKeyboard = false) {
 				defaultStore.state.rememberNoteVisibility ? defaultStore.state.localOnly : defaultStore.state.defaultNoteLocalOnly
 			) : defaultStore.state.defaultRenoteLocalOnly;
 
-			os.api('notes/create', {
+			os.apiWithDialog('notes/create', {
 				renoteId: appearNote.id,
 				visibility: visibility as never,
 				localOnly,
