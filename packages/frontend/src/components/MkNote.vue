@@ -261,7 +261,15 @@ function renote(viaKeyboard = false) {
 			text: i18n.ts.inChannelRenote,
 			icon: 'ti ti-repeat',
 			action: () => {
-				os.apiWithDialog('notes/create', {
+				const el = renoteButton.value as HTMLElement | null | undefined;
+				if (el) {
+					const rect = el.getBoundingClientRect();
+					const x = rect.left + (el.offsetWidth / 2);
+					const y = rect.top + (el.offsetHeight / 2);
+					os.popup(MkRippleEffect, { x, y }, {}, 'end');
+				}
+
+				os.api('notes/create', {
 					renoteId: appearNote.id,
 					channelId: appearNote.channelId,
 				}).then(() => {
@@ -286,22 +294,19 @@ function renote(viaKeyboard = false) {
 		action: () => {
 			os.apiWithDialog('notes/create', {
 				renoteId: appearNote.id,
-			}).then(() => {
-				os.toast(i18n.ts.renoted);
 			});
 		},
 	}, {
-	  text: '引用してノート',
-	  icon: 'ti ti-quote',
-	  action: () => {
-			if (note.text != null) {
-				const quoteText = '>' + note.text.replace(/\r?\n/g, '\n>') + '\n';
-				os.post({
-					initialText: quoteText,
-				});
-			}
-	  },
-	}], renoteButton.value, {
+		text: i18n.ts.quote,
+		icon: 'ti ti-quote',
+		action: () => {
+			os.post({
+				renote: appearNote,
+			});
+		},
+	}]);
+
+	os.popupMenu(items, renoteButton.value, {
 		viaKeyboard,
 	});
 }
