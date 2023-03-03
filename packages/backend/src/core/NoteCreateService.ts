@@ -139,7 +139,8 @@ type Option = {
 
 @Injectable()
 export class NoteCreateService implements OnApplicationShutdown {
-		#shutdownController = new AbortController();
+	#shutdownController = new AbortController();
+
 	constructor(
 		@Inject(DI.config)
 		private config: Config,
@@ -761,7 +762,7 @@ export class NoteCreateService implements OnApplicationShutdown {
 
 		return mentionedUsers;
 	}
-	
+
 	onApplicationShutdown(signal?: string | undefined) {
 		this.#shutdownController.abort();
 	}

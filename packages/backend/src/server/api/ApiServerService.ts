@@ -79,7 +79,7 @@ export class ApiServerService {
 						reply.send();
 						return;
 					}
-		
+
 					// Await so that any error can automatically be translated to HTTP 500
 					await this.apiCallService.handleMultipartRequest(ep, request, reply);
 					return reply;

@@ -208,7 +208,7 @@ module.exports = {
 	// watchman: true,
 
 	extensionsToTreatAsEsm: ['.ts'],
-	
+
 	testTimeout: 60000,
 
 	// Let Jest kill the test worker whenever it grows too much

@@ -123,6 +123,7 @@ describe('Endpoints', () => {
 			}, alice);
 			assert.strictEqual(res.status, 200);
 			assert.strictEqual(res.body.name, ' ');
+		});
 
 		test('誕生日の設定を削除できる', async () => {
 			await api('/i/update', {
@@ -381,20 +382,11 @@ describe('Endpoints', () => {
 		});
 	});
 
-	/*
-	describe('/i', () => {
-		test('', async () => {
-		});
-	});
-	*/
-});
-
-/*
 	describe('drive', () => {
 		test('ドライブ情報を取得できる', async () => {
 			await uploadFile(alice, {
 				blob: new Blob([new Uint8Array(256)]),
-				});
+			});
 			await uploadFile(alice, {
 				blob: new Blob([new Uint8Array(512)]),
 			});
@@ -404,7 +396,7 @@ describe('Endpoints', () => {
 			const res = await api('/drive', {}, alice);
 			assert.strictEqual(res.status, 200);
 			assert.strictEqual(typeof res.body === 'object' && !Array.isArray(res.body), true);
-				expect(res.body).toHaveProperty('usage', 1792);
+			expect(res.body).toHaveProperty('usage', 1792);
 		});
 	});
 
@@ -418,11 +410,6 @@ describe('Endpoints', () => {
 		});
 
 		test('ファイルに名前を付けられる', async () => {
-			const res = await assert.request(server)
-				.post('/drive/files/create')
-				.field('i', alice.token)
-				.field('name', 'Belmond.png')
-				.attach('file', fs.readFileSync(__dirname + '/resources/Lenna.png'), 'Lenna.png');
 			const res = await uploadFile(alice, { name: 'Belmond.png' });
 
 			assert.strictEqual(res.status, 200);
@@ -462,7 +449,7 @@ describe('Endpoints', () => {
 		});
 
 		test('他人のファイルは更新できない', async () => {
-			const file = await uploadFile(bob);
+			const file = (await uploadFile(alice)).body;
 
 			const res = await api('/drive/files/update', {
 				fileId: file.id,
@@ -600,7 +587,7 @@ describe('Endpoints', () => {
 
 			const res = await api('/drive/folders/update', {
 				folderId: folder.id,
-				name: 'new name'
+				name: 'new name',
 			}, alice);
 
 			assert.strictEqual(res.status, 400);
@@ -616,7 +603,7 @@ describe('Endpoints', () => {
 
 			const res = await api('/drive/folders/update', {
 				folderId: folder.id,
-				parentId: parentFolder.id
+				parentId: parentFolder.id,
 			}, alice);
 
 			assert.strictEqual(res.status, 200);
@@ -765,63 +752,6 @@ describe('Endpoints', () => {
 		});
 	});
 
-	describe('messaging/messages/create', () => {
-		test('メッセージを送信できる', async () => {
-			const res = await api('/messaging/messages/create', {
-				userId: bob.id,
-				text: 'test',
-			}, alice);
-
-			assert.strictEqual(res.status, 200);
-			assert.strictEqual(typeof res.body === 'object' && !Array.isArray(res.body), true);
-			assert.strictEqual(res.body.text, 'test');
-		});
-
-		test('自分自身にはメッセージを送信できない', async () => {
-			const res = await api('/messaging/messages/create', {
-				userId: alice.id,
-				text: 'Yo',
-			}, alice);
-
-			assert.strictEqual(res.status, 400);
-		});
-
-		test('存在しないユーザーにはメッセージを送信できない', async () => {
-			const res = await api('/messaging/messages/create', {
-				userId: '000000000000000000000000',
-				text: 'test',
-			}, alice);
-
-			assert.strictEqual(res.status, 400);
-		});
-
-		test('不正なユーザーIDで怒られる', async () => {
-			const res = await api('/messaging/messages/create', {
-				userId: 'foo',
-				text: 'test',
-			}, alice);
-
-			assert.strictEqual(res.status, 400);
-		});
-
-		test('テキストが無くて怒られる', async () => {
-			const res = await api('/messaging/messages/create', {
-				userId: bob.id,
-			}, alice);
-
-			assert.strictEqual(res.status, 400);
-		});
-
-		test('文字数オーバーで怒られる', async () => {
-			const res = await api('/messaging/messages/create', {
-				userId: bob.id,
-				text: '!'.repeat(1001),
-			}, alice);
-
-			assert.strictEqual(res.status, 400);
-		});
-	});
-
 	describe('notes/replies', () => {
 		test('自分に閲覧権限のない投稿は含まれない', async () => {
 			const alicePost = await post(alice, {
@@ -848,20 +778,20 @@ describe('Endpoints', () => {
 	describe('notes/timeline', () => {
 		test('フォロワー限定投稿が含まれる', async () => {
 			await api('/following/create', {
-				userId: alice.id,
-			}, bob);
+				userId: carol.id,
+			}, dave);
 
-			const alicePost = await post(alice, {
+			const carolPost = await post(carol, {
 				text: 'foo',
 				visibility: 'followers',
 			});
 
-			const res = await api('/notes/timeline', {}, bob);
+			const res = await api('/notes/timeline', {}, dave);
 
 			assert.strictEqual(res.status, 200);
 			assert.strictEqual(Array.isArray(res.body), true);
 			assert.strictEqual(res.body.length, 1);
-			assert.strictEqual(res.body[0].id, alicePost.id);
+			assert.strictEqual(res.body[0].id, carolPost.id);
 		});
 	});
 });

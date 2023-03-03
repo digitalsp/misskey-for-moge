@@ -12,7 +12,7 @@ import { bindThis } from '@/decorators.js';
 
 @Injectable()
 export class CreateNotificationService implements OnApplicationShutdown {
-		#shutdownController = new AbortController();
+	#shutdownController = new AbortController();
 
 	constructor(
 		@Inject(DI.usersRepository)
@@ -43,11 +43,11 @@ export class CreateNotificationService implements OnApplicationShutdown {
 		if (data.notifierId && (notifieeId === data.notifierId)) {
 			return null;
 		}
-	
+
 		const profile = await this.userProfilesRepository.findOneBy({ userId: notifieeId });
-	
+
 		const isMuted = profile?.mutingNotificationTypes.includes(type);
-	
+
 		// Create notification
 		const notification = await this.notificationsRepository.insert({
 			id: this.idService.genId(),
@@ -59,18 +59,18 @@ export class CreateNotificationService implements OnApplicationShutdown {
 			...data,
 		} as Partial<Notification>)
 			.then(x => this.notificationsRepository.findOneByOrFail(x.identifiers[0]));
-	
+
 		const packed = await this.notificationEntityService.pack(notification, {});
-	
+
 		// Publish notification event
 		this.globalEventService.publishMainStream(notifieeId, 'notification', packed);
-	
+
 		// 2秒経っても(今回作成した)通知が既読にならなかったら「未読の通知がありますよ」イベントを発行する
 		setTimeout(2000, 'unread note', { signal: this.#shutdownController.signal }).then(async () => {
 			const fresh = await this.notificationsRepository.findOneBy({ id: notification.id });
 			if (fresh == null) return; // 既に削除されているかもしれない
 			if (fresh.isRead) return;
-	
+
 			//#region ただしミュートしているユーザーからの通知なら無視
 			const mutings = await this.mutingsRepository.findBy({
 				muterId: notifieeId,
@@ -79,14 +79,14 @@ export class CreateNotificationService implements OnApplicationShutdown {
 				return;
 			}
 			//#endregion
-	
+
 			this.globalEventService.publishMainStream(notifieeId, 'unreadNotification', packed);
 			this.pushNotificationService.pushNotification(notifieeId, 'notification', packed);
-	
+
 			if (type === 'follow') this.emailNotificationFollow(notifieeId, await this.usersRepository.findOneByOrFail({ id: data.notifierId! }));
 			if (type === 'receiveFollowRequest') this.emailNotificationReceiveFollowRequest(notifieeId, await this.usersRepository.findOneByOrFail({ id: data.notifierId! }));
 		}, () => { /* aborted, ignore it */ });
-	
+
 		return notification;
 	}
 
@@ -106,7 +106,7 @@ export class CreateNotificationService implements OnApplicationShutdown {
 		sendEmail(userProfile.email, i18n.t('_email._follow.title'), `${follower.name} (@${Acct.toString(follower)})`, `${follower.name} (@${Acct.toString(follower)})`);
 		*/
 	}
-	
+
 	@bindThis
 	private async emailNotificationReceiveFollowRequest(userId: User['id'], follower: User) {
 		/*
@@ -118,7 +118,7 @@ export class CreateNotificationService implements OnApplicationShutdown {
 		sendEmail(userProfile.email, i18n.t('_email._receiveFollowRequest.title'), `${follower.name} (@${Acct.toString(follower)})`, `${follower.name} (@${Acct.toString(follower)})`);
 		*/
 	}
-	
+
 	onApplicationShutdown(signal?: string | undefined): void {
 		this.#shutdownController.abort();
 	}
