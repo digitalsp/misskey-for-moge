@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { DI } from '@/di-symbols.js';
-import { User, Note, Announcement, AnnouncementRead, App, NoteFavorite, NoteThreadMuting, NoteReaction, NoteUnread, Notification, Poll, PollVote, UserProfile, UserKeypair, UserPending, AttestationChallenge, UserSecurityKey, UserPublickey, UserList, UserListJoining, UserNotePining, UserIp, UsedUsername, Following, FollowRequest, Instance, Emoji, DriveFile, DriveFolder, Meta, Muting, Blocking, SwSubscription, Hashtag, AbuseUserReport, RegistrationTicket, AuthSession, AccessToken, Signin, Page, PageLike, GalleryPost, GalleryLike, ModerationLog, Clip, ClipNote, Antenna, AntennaNote, PromoNote, PromoRead, Relay, MutedNote, Channel, ChannelFollowing, ChannelNotePining, RegistryItem, Webhook, Ad, PasswordResetRequest, RetentionAggregation, FlashLike, Flash, Role, RoleAssignment } from './index.js';
+import { User, Note, Announcement, AnnouncementRead, App, NoteFavorite, NoteThreadMuting, NoteReaction, NoteUnread, Notification, Poll, PollVote, UserProfile, UserKeypair, UserPending, AttestationChallenge, UserSecurityKey, UserPublickey, UserList, UserListJoining, UserGroup, UserGroupJoining, UserGroupInvitation, UserNotePining, UserIp, UsedUsername, Following, FollowRequest, Instance, Emoji, DriveFile, DriveFolder, Meta, Muting, Blocking, SwSubscription, Hashtag, AbuseUserReport, RegistrationTicket, AuthSession, AccessToken, Signin, MessagingMessage, Page, PageLike, GalleryPost, GalleryLike, ModerationLog, Clip, ClipNote, Antenna, AntennaNote, PromoNote, PromoRead, Relay, MutedNote, Channel, ChannelFollowing, ChannelNotePining, RegistryItem, Webhook, Ad, PasswordResetRequest, RetentionAggregation, FlashLike, Flash, Role, RoleAssignment } from './index.js';
 import type { DataSource } from 'typeorm';
 import type { Provider } from '@nestjs/common';
 
@@ -238,6 +238,12 @@ const $signinsRepository: Provider = {
 	inject: [DI.db],
 };
 
+const $messagingMessagesRepository: Provider = {
+	provide: DI.messagingMessagesRepository,
+	useFactory: (db: DataSource) => db.getRepository(MessagingMessage),
+	inject: [DI.db],
+};
+
 const $pagesRepository: Provider = {
 	provide: DI.pagesRepository,
 	useFactory: (db: DataSource) => db.getRepository(Page),
@@ -431,6 +437,7 @@ const $roleAssignmentsRepository: Provider = {
 		$authSessionsRepository,
 		$accessTokensRepository,
 		$signinsRepository,
+		$messagingMessagesRepository,
 		$pagesRepository,
 		$pageLikesRepository,
 		$galleryPostsRepository,
@@ -497,6 +504,7 @@ const $roleAssignmentsRepository: Provider = {
 		$authSessionsRepository,
 		$accessTokensRepository,
 		$signinsRepository,
+		$messagingMessagesRepository,
 		$pagesRepository,
 		$pageLikesRepository,
 		$galleryPostsRepository,
