@@ -118,6 +118,24 @@ const $userListJoiningsRepository: Provider = {
 	inject: [DI.db],
 };
 
+const $userGroupsRepository: Provider = {
+	provide: DI.userGroupsRepository,
+	useFactory: (db: DataSource) => db.getRepository(UserGroup),
+	inject: [DI.db],
+};
+
+const $userGroupJoiningsRepository: Provider = {
+	provide: DI.userGroupJoiningsRepository,
+	useFactory: (db: DataSource) => db.getRepository(UserGroupJoining),
+	inject: [DI.db],
+};
+
+const $userGroupInvitationsRepository: Provider = {
+	provide: DI.userGroupInvitationsRepository,
+	useFactory: (db: DataSource) => db.getRepository(UserGroupInvitation),
+	inject: [DI.db],
+};
+
 const $userNotePiningsRepository: Provider = {
 	provide: DI.userNotePiningsRepository,
 	useFactory: (db: DataSource) => db.getRepository(UserNotePining),
@@ -417,6 +435,9 @@ const $roleAssignmentsRepository: Provider = {
 		$userPublickeysRepository,
 		$userListsRepository,
 		$userListJoiningsRepository,
+		$userGroupsRepository,
+		$userGroupJoiningsRepository,
+		$userGroupInvitationsRepository,
 		$userNotePiningsRepository,
 		$userIpsRepository,
 		$usedUsernamesRepository,
@@ -484,6 +505,9 @@ const $roleAssignmentsRepository: Provider = {
 		$userPublickeysRepository,
 		$userListsRepository,
 		$userListJoiningsRepository,
+		$userGroupsRepository,
+		$userGroupJoiningsRepository,
+		$userGroupInvitationsRepository,
 		$userNotePiningsRepository,
 		$userIpsRepository,
 		$usedUsernamesRepository,
