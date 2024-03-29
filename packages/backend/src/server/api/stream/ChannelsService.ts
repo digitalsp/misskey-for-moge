@@ -25,7 +25,6 @@ export class ChannelsService {
 		private homeTimelineChannelService: HomeTimelineChannelService,
 		private localTimelineChannelService: LocalTimelineChannelService,
 		private hybridTimelineChannelService: HybridTimelineChannelService,
-		private mediaTimelineChannelService: MediaTimelineChannelService,
 		private globalTimelineChannelService: GlobalTimelineChannelService,
 		private userListChannelService: UserListChannelService,
 		private hashtagChannelService: HashtagChannelService,
@@ -33,6 +32,7 @@ export class ChannelsService {
 		private channelChannelService: ChannelChannelService,
 		private messagingChannelService: MessagingChannelService,
 		private messagingIndexChannelService: MessagingIndexChannelService,
+		private mediaTimelineChannelService: MediaTimelineChannelService,
 		private driveChannelService: DriveChannelService,
 		private serverStatsChannelService: ServerStatsChannelService,
 		private queueStatsChannelService: QueueStatsChannelService,
@@ -47,7 +47,6 @@ export class ChannelsService {
 			case 'homeTimeline': return this.homeTimelineChannelService;
 			case 'localTimeline': return this.localTimelineChannelService;
 			case 'hybridTimeline': return this.hybridTimelineChannelService;
-			case 'mediaTimeline': return this.mediaTimelineChannelService;
 			case 'globalTimeline': return this.globalTimelineChannelService;
 			case 'userList': return this.userListChannelService;
 			case 'hashtag': return this.hashtagChannelService;
@@ -55,6 +54,7 @@ export class ChannelsService {
 			case 'channel': return this.channelChannelService;
 			case 'messaging': return this.messagingChannelService;
 			case 'messagingIndex': return this.messagingIndexChannelService;
+			case 'mediaTimeline': return this.mediaTimelineChannelService;
 			case 'drive': return this.driveChannelService;
 			case 'serverStats': return this.serverStatsChannelService;
 			case 'queueStats': return this.queueStatsChannelService;

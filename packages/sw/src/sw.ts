@@ -61,11 +61,7 @@ globalThis.addEventListener('push', ev => {
 				}
 				break;
 				case 'readAllMessagingMessages':
-					for (const n of await self.registration.getNotifications()) {
-						if (n?.data?.type === 'unreadMessagingMessage') n.close();
-					}
-					break;
-				for (const n of await self.registration.getNotifications()) {
+				for (const n of await globalThis.registration.getNotifications()) {
 					if (n?.data?.type === 'unreadMessagingMessage') n.close();
 				}
 				break;

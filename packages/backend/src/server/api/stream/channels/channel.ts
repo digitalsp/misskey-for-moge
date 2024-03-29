@@ -1,9 +1,10 @@
 import { Inject, Injectable } from '@nestjs/common';
-import type { NotesRepository, UsersRepository } from '@/models/index.js';
+// import type { NotesRepository, UsersRepository } from '@/models/index.js';
 import { isUserRelated } from '@/misc/is-user-related.js';
 import type { User } from '@/models/entities/User.js';
 import type { Packed } from '@/misc/schema.js';
 import { NoteEntityService } from '@/core/entities/NoteEntityService.js';
+import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { bindThis } from '@/decorators.js';
 import Channel from '../channel.js';
 import type { StreamMessages } from '../types.js';
