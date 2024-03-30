@@ -101,6 +101,7 @@ import MkRippleEffect from '@/components/MkRippleEffect.vue';
 import { miLocalStorage } from '@/local-storage';
 import { claimAchievement } from '@/scripts/achievements';
 import { generate } from '@/scripts/cjp';
+import { throttle } from 'throttle-debounce';
 
 const modal = inject('modal');
 
@@ -804,6 +805,14 @@ onMounted(() => {
 defineExpose({
 	clear,
 });
+
+function setVisualViewport() {
+	const vv = window.visualViewport;
+	document.documentElement.style.setProperty('--vvh', `${vv.height}px`);
+}
+setVisualViewport();
+window.visualViewport.addEventListener('resize', setVisualViewport)
+
 </script>
 
 <style lang="scss" module>
@@ -1086,8 +1095,7 @@ defineExpose({
 		top: 0;
 		left: 0;
 		width: 100vw;
-		height: 100vh;
-		height: 100dvh;
+		height: var(--vvh, 100dvh);
 		max-width: none;
 		background-color: var(--bg);
 		border-radius: 0;
