@@ -502,9 +502,9 @@ function onDragover(ev) {
 		switch (ev.dataTransfer.effectAllowed) {
 			case 'all':
 			case 'uninitialized':
-			case 'copy':
-			case 'copyLink':
-			case 'copyMove':
+			case 'copy': 
+			case 'copyLink': 
+			case 'copyMove': 
 				ev.dataTransfer.dropEffect = 'copy';
 				break;
 			case 'linkMove':
@@ -805,14 +805,6 @@ onMounted(() => {
 defineExpose({
 	clear,
 });
-
-function setVisualViewport() {
-	const vv = window.visualViewport;
-	document.documentElement.style.setProperty('--vvh', `${vv.height}px`);
-}
-setVisualViewport();
-window.visualViewport.addEventListener('resize', setVisualViewport)
-
 
 function setVisualViewport() {
 	const vv = window.visualViewport;

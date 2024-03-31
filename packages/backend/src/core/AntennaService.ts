@@ -182,15 +182,13 @@ export class AntennaService implements OnApplicationShutdown {
 			.filter(xs => xs.length > 0);
 	
 		if (keywords.length > 0) {
-			if (note.text == null && note.cw == null) return false;
-
-			const _text = (note.text ?? '') + '\n' + (note.cw ?? '');
+			if (note.text == null) return false;
 	
 			const matched = keywords.some(and =>
 				and.every(keyword =>
 					antenna.caseSensitive
-						? _text.includes(keyword)
-						: _text.toLowerCase().includes(keyword.toLowerCase()),
+						? note.text!.includes(keyword)
+						: note.text!.toLowerCase().includes(keyword.toLowerCase()),
 				));
 	
 			if (!matched) return false;
@@ -202,15 +200,13 @@ export class AntennaService implements OnApplicationShutdown {
 			.filter(xs => xs.length > 0);
 	
 		if (excludeKeywords.length > 0) {
-			if (note.text == null && note.cw == null) return false;
-
-			const _text = (note.text ?? '') + '\n' + (note.cw ?? '');
-
+			if (note.text == null) return false;
+	
 			const matched = excludeKeywords.some(and =>
 				and.every(keyword =>
 					antenna.caseSensitive
-						? _text.includes(keyword)
-						: _text.toLowerCase().includes(keyword.toLowerCase()),
+						? note.text!.includes(keyword)
+						: note.text!.toLowerCase().includes(keyword.toLowerCase()),
 				));
 	
 			if (matched) return false;

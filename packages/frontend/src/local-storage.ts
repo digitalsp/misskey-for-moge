@@ -2,6 +2,8 @@ type Keys =
 	'v' |
 	'lastVersion' |
 	'instance' |
+	'emojis' | // TODO: indexed db
+	'lastEmojisFetchedAt' |
 	'account' |
 	'accounts' |
 	'latestDonationInfoShownAt' |
@@ -26,9 +28,7 @@ type Keys =
 	`miux:${string}` |
 	`ui:folder:${string}` |
 	`themes:${string}` |
-	`aiscript:${string}` |
-	'lastEmojisFetchedAt' | // DEPRECATED, stored in indexeddb (13.9.0~)
-	'emojis' // DEPRECATED, stored in indexeddb (13.9.0~);
+	`aiscript:${string}`;
 
 export const miLocalStorage = {
 	getItem: (key: Keys) => window.localStorage.getItem(key),

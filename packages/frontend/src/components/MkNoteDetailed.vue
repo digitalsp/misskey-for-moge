@@ -165,7 +165,6 @@ import { useTooltip } from '@/scripts/use-tooltip';
 import { claimAchievement } from '@/scripts/achievements';
 import { MenuItem } from '@/types/menu';
 import { stealMenu } from '@/scripts/steal-menu';
-import MkRippleEffect from '@/components/MkRippleEffect.vue';
 
 const props = defineProps<{
 	note: misskey.entities.Note;
@@ -256,19 +255,9 @@ function renote(viaKeyboard = false) {
 			text: i18n.ts.inChannelRenote,
 			icon: 'ti ti-repeat',
 			action: () => {
-				const el = renoteButton.value as HTMLElement | null | undefined;
-				if (el) {
-					const rect = el.getBoundingClientRect();
-					const x = rect.left + (el.offsetWidth / 2);
-					const y = rect.top + (el.offsetHeight / 2);
-					os.popup(MkRippleEffect, { x, y }, {}, 'end');
-				}
-
-				os.api('notes/create', {
+				os.apiWithDialog('notes/create', {
 					renoteId: appearNote.id,
 					channelId: appearNote.channelId,
-				}).then(() => {
-					os.toast(i18n.ts.renoted);
 				});
 			},
 		}, {
@@ -287,8 +276,18 @@ function renote(viaKeyboard = false) {
 		text: i18n.ts.renote,
 		icon: 'ti ti-repeat',
 		action: () => {
+			const visibility = defaultStore.state.useDefaultNoteVisibilityOnRenote ? (
+				defaultStore.state.rememberNoteVisibility ? defaultStore.state.visibility : defaultStore.state.defaultNoteVisibility
+			) : defaultStore.state.defaultRenoteVisibility;
+
+			const localOnly = defaultStore.state.useDefaultNoteVisibilityOnRenote ? (
+				defaultStore.state.rememberNoteVisibility ? defaultStore.state.localOnly : defaultStore.state.defaultNoteLocalOnly
+			) : defaultStore.state.defaultRenoteLocalOnly;
+
 			os.apiWithDialog('notes/create', {
 				renoteId: appearNote.id,
+				visibility: visibility as never,
+				localOnly,
 			});
 		},
 	}, {

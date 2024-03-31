@@ -1,5 +1,4 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { Brackets } from 'typeorm';
 import type { RoleAssignmentsRepository, RolesRepository } from '@/models/index.js';
 import { Endpoint } from '@/server/api/endpoint-base.js';
 import { QueryService } from '@/core/QueryService.js';
@@ -57,10 +56,6 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 
 			const query = this.queryService.makePaginationQuery(this.roleAssignmentsRepository.createQueryBuilder('assign'), ps.sinceId, ps.untilId)
 				.andWhere('assign.roleId = :roleId', { roleId: role.id })
-				.andWhere(new Brackets(qb => { qb
-					.where('assign.expiresAt IS NULL')
-					.orWhere('assign.expiresAt > :now', { now: new Date() });
-				}))
 				.innerJoinAndSelect('assign.user', 'user');
 
 			const assigns = await query
@@ -69,9 +64,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 
 			return await Promise.all(assigns.map(async assign => ({
 				id: assign.id,
-				createdAt: assign.createdAt,
 				user: await this.userEntityService.pack(assign.user!, me, { detail: true }),
-				expiresAt: assign.expiresAt,
 			})));
 		});
 	}

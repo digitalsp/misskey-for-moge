@@ -1,12 +1,12 @@
 process.env.NODE_ENV = 'test';
 
 import * as assert from 'assert';
-import { Following } from '@/models/entities/Following.js';
-import { connectStream, signup, api, post, startServer, initTestDb, waitFire } from '../utils.js';
-import type { INestApplicationContext } from '@nestjs/common';
+import * as childProcess from 'child_process';
+import { Following } from '../../src/models/entities/following.js';
+import { connectStream, signup, api, post, startServer, shutdownServer, initTestDb, waitFire } from '../utils.js';
 
 describe('Streaming', () => {
-	let p: INestApplicationContext;
+	let p: childProcess.ChildProcess;
 	let Followings: any;
 
 	const follow = async (follower: any, followee: any) => {
@@ -71,10 +71,10 @@ describe('Streaming', () => {
 				listId: list.id,
 				userId: kyoko.id,
 			}, chitose);
-		}, 1000 * 60 * 2);
+		}, 1000 * 30);
 
 		afterAll(async () => {
-			await p.close();
+			await shutdownServer(p);
 		});
 
 		describe('Events', () => {
@@ -404,45 +404,43 @@ describe('Streaming', () => {
 				});
 			}));
 
-			// XXX: QueryFailedError: duplicate key value violates unique constraint "IDX_347fec870eafea7b26c8a73bac"
-
-			// test('指定したハッシュタグの投稿が流れる (AND)', () => new Promise<void>(async done => {
-			// 	let fooCount = 0;
-			// 	let barCount = 0;
-			// 	let fooBarCount = 0;
-
-			// 	const ws = await connectStream(chitose, 'hashtag', ({ type, body }) => {
-			// 		if (type === 'note') {
-			// 			if (body.text === '#foo') fooCount++;
-			// 			if (body.text === '#bar') barCount++;
-			// 			if (body.text === '#foo #bar') fooBarCount++;
-			// 		}
-			// 	}, {
-			// 		q: [
-			// 			['foo', 'bar'],
-			// 		],
-			// 	});
-
-			// 	post(chitose, {
-			// 		text: '#foo',
-			// 	});
-
-			// 	post(chitose, {
-			// 		text: '#bar',
-			// 	});
-
-			// 	post(chitose, {
-			// 		text: '#foo #bar',
-			// 	});
-
-			// 	setTimeout(() => {
-			// 		assert.strictEqual(fooCount, 0);
-			// 		assert.strictEqual(barCount, 0);
-			// 		assert.strictEqual(fooBarCount, 1);
-			// 		ws.close();
-			// 		done();
-			// 	}, 3000);
-			// }));
+			test('指定したハッシュタグの投稿が流れる (AND)', () => new Promise<void>(async done => {
+				let fooCount = 0;
+				let barCount = 0;
+				let fooBarCount = 0;
+	
+				const ws = await connectStream(chitose, 'hashtag', ({ type, body }) => {
+					if (type === 'note') {
+						if (body.text === '#foo') fooCount++;
+						if (body.text === '#bar') barCount++;
+						if (body.text === '#foo #bar') fooBarCount++;
+					}
+				}, {
+					q: [
+						['foo', 'bar'],
+					],
+				});
+	
+				post(chitose, {
+					text: '#foo',
+				});
+	
+				post(chitose, {
+					text: '#bar',
+				});
+	
+				post(chitose, {
+					text: '#foo #bar',
+				});
+	
+				setTimeout(() => {
+					assert.strictEqual(fooCount, 0);
+					assert.strictEqual(barCount, 0);
+					assert.strictEqual(fooBarCount, 1);
+					ws.close();
+					done();
+				}, 3000);
+			}));
 
 			test('指定したハッシュタグの投稿が流れる (OR)', () => new Promise<void>(async done => {
 				let fooCount = 0;
