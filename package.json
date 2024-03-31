@@ -1,12 +1,12 @@
 {
 	"name": "misskey",
-	"version": "13.9.1-flestudio-v1.2.2",
+	"version": "13.8.1-flestudio-v1.2.1",
 	"codename": "nasubi",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/xflest/misskey.git"
 	},
-	"packageManager": "pnpm@7.27.0",
+	"packageManager": "pnpm@8.14.3",
 	"workspaces": [
 		"packages/frontend",
 		"packages/backend",

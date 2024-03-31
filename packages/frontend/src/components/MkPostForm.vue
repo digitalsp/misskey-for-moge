@@ -101,6 +101,7 @@ import MkRippleEffect from '@/components/MkRippleEffect.vue';
 import { miLocalStorage } from '@/local-storage';
 import { claimAchievement } from '@/scripts/achievements';
 import { generate } from '@/scripts/cjp';
+import { throttle } from 'throttle-debounce';
 
 const modal = inject('modal');
 
@@ -161,6 +162,12 @@ let quoteId = $ref(null);
 let hasNotSpecifiedMentions = $ref(false);
 let recentHashtags = $ref(JSON.parse(miLocalStorage.getItem('hashtags') ?? '[]'));
 let imeText = $ref('');
+
+const typing = throttle(3000, () => {
+	if (props.channel) {
+		stream.send('typingOnChannel', { channel: props.channel.id });
+	}
+});
 
 const draftKey = $computed((): string => {
 	let key = props.channel ? `channel:${props.channel.id}` : '';
@@ -441,12 +448,14 @@ function clear() {
 }
 
 function onKeydown(ev: KeyboardEvent) {
-	if (ev.key === 'Enter' && (ev.ctrlKey || ev.metaKey) && canPost) post();
-	if (ev.key === 'Escape') emit('esc');
+	if ((ev.which === 10 || ev.which === 13) && (ev.ctrlKey || ev.metaKey) && canPost) post();
+	if (ev.which === 27) emit('esc');
+	typing();
 }
 
 function onCompositionUpdate(ev: CompositionEvent) {
 	imeText = ev.data;
+	typing();
 }
 
 function onCompositionEnd(ev: CompositionEvent) {
@@ -493,9 +502,9 @@ function onDragover(ev) {
 		switch (ev.dataTransfer.effectAllowed) {
 			case 'all':
 			case 'uninitialized':
-			case 'copy':
-			case 'copyLink':
-			case 'copyMove':
+			case 'copy': 
+			case 'copyLink': 
+			case 'copyMove': 
 				ev.dataTransfer.dropEffect = 'copy';
 				break;
 			case 'linkMove':

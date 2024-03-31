@@ -1,7 +1,7 @@
 import cluster from 'node:cluster';
 import * as fs from 'node:fs';
-import { Inject, Injectable, OnApplicationShutdown } from '@nestjs/common';
-import Fastify, { FastifyInstance } from 'fastify';
+import { Inject, Injectable } from '@nestjs/common';
+import Fastify from 'fastify';
 import { IsNull } from 'typeorm';
 import { GlobalEventService } from '@/core/GlobalEventService.js';
 import type { Config } from '@/config.js';
@@ -23,9 +23,8 @@ import { FileServerService } from './FileServerService.js';
 import { ClientServerService } from './web/ClientServerService.js';
 
 @Injectable()
-export class ServerService implements OnApplicationShutdown {
+export class ServerService {
 	private logger: Logger;
-	#fastify: FastifyInstance;
 
 	constructor(
 		@Inject(DI.config)
@@ -55,12 +54,11 @@ export class ServerService implements OnApplicationShutdown {
 	}
 
 	@bindThis
-	public async launch() {
+	public launch() {
 		const fastify = Fastify({
 			trustProxy: true,
 			logger: !['production', 'test'].includes(process.env.NODE_ENV ?? ''),
 		});
-		this.#fastify = fastify;
 
 		// HSTS
 		// 6months (15552000sec)
@@ -77,7 +75,7 @@ export class ServerService implements OnApplicationShutdown {
 		fastify.register(this.nodeinfoServerService.createServer);
 		fastify.register(this.wellKnownServerService.createServer);
 
-		fastify.get<{ Params: { path: string }; Querystring: { static?: any; badge?: any; }; }>('/emoji/:path(.*)', async (request, reply) => {
+		fastify.get<{ Params: { path: string }; Querystring: { static?: any; }; }>('/emoji/:path(.*)', async (request, reply) => {
 			const path = request.params.path;
 
 			reply.header('Cache-Control', 'public, max-age=86400');
@@ -107,19 +105,11 @@ export class ServerService implements OnApplicationShutdown {
 				}
 			}
 
-			let url: URL;
-			if ('badge' in request.query) {
-				url = new URL(`${this.config.mediaProxy}/emoji.png`);
-				// || emoji.originalUrl してるのは後方互換性のため（publicUrlはstringなので??はだめ）
-				url.searchParams.set('url', emoji.publicUrl || emoji.originalUrl);
-				url.searchParams.set('badge', '1');
-			} else {
-				url = new URL(`${this.config.mediaProxy}/emoji.webp`);
-				// || emoji.originalUrl してるのは後方互換性のため（publicUrlはstringなので??はだめ）
-				url.searchParams.set('url', emoji.publicUrl || emoji.originalUrl);
-				url.searchParams.set('emoji', '1');
-				if ('static' in request.query) url.searchParams.set('static', '1');
-			}
+			const url = new URL(`${this.config.mediaProxy}/emoji.webp`);
+			// || emoji.originalUrl してるのは後方互換性のため（publicUrlはstringなので??はだめ）
+			url.searchParams.set('url', emoji.publicUrl || emoji.originalUrl);
+			url.searchParams.set('emoji', '1');
+			if ('static' in request.query) url.searchParams.set('static', '1');
 
 			return await reply.redirect(
 				301,
@@ -205,11 +195,5 @@ export class ServerService implements OnApplicationShutdown {
 		});
 
 		fastify.listen({ port: this.config.port, host: '0.0.0.0' });
-
-		await fastify.ready();
-	}
-
-	async onApplicationShutdown(signal: string): Promise<void> {
-		await this.#fastify.close();
 	}
 }

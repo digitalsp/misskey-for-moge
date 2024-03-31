@@ -27,11 +27,11 @@
 						</div>
 					</div>
 				</Transition>
-				<MkFolder :default-open="false" :max-height="280" class="_margin">
+				<MkFolder class="_margin">
 					<template #icon><i class="ti ti-code"></i></template>
 					<template #label>{{ i18n.ts._play.viewSource }}</template>
 
-					<MkCode :code="flash.script" :inline="false" class="_monospace"/>
+					<MkTextarea :model-value="flash.script" readonly tall class="_monospace" spellcheck="false"></MkTextarea>
 				</MkFolder>
 				<div :class="$style.footer">
 					<Mfm :text="`By @${flash.user.username}`"/>
@@ -62,7 +62,7 @@ import MkAsUi from '@/components/MkAsUi.vue';
 import { AsUiComponent, AsUiRoot, registerAsUiLib } from '@/scripts/aiscript/ui';
 import { createAiScriptEnv } from '@/scripts/aiscript/api';
 import MkFolder from '@/components/MkFolder.vue';
-import MkCode from '@/components/MkCode.vue';
+import MkTextarea from '@/components/MkTextarea.vue';
 
 const props = defineProps<{
 	id: string;
