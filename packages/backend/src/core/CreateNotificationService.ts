@@ -1,4 +1,5 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { setTimeout } from 'node:timers/promises';
+import { Inject, Injectable, OnApplicationShutdown } from '@nestjs/common';
 import type { MutingsRepository, NotificationsRepository, UserProfilesRepository, UsersRepository } from '@/models/index.js';
 import type { User } from '@/models/entities/User.js';
 import type { Notification } from '@/models/entities/Notification.js';
@@ -10,7 +11,9 @@ import { PushNotificationService } from '@/core/PushNotificationService.js';
 import { bindThis } from '@/decorators.js';
 
 @Injectable()
-export class CreateNotificationService {
+export class CreateNotificationService implements OnApplicationShutdown {
+		#shutdownController = new AbortController();
+
 	constructor(
 		@Inject(DI.usersRepository)
 		private usersRepository: UsersRepository,
@@ -63,7 +66,7 @@ export class CreateNotificationService {
 		this.globalEventService.publishMainStream(notifieeId, 'notification', packed);
 	
 		// 2秒経っても(今回作成した)通知が既読にならなかったら「未読の通知がありますよ」イベントを発行する
-		setTimeout(async () => {
+		setTimeout(2000, 'unread note', { signal: this.#shutdownController.signal }).then(async () => {
 			const fresh = await this.notificationsRepository.findOneBy({ id: notification.id });
 			if (fresh == null) return; // 既に削除されているかもしれない
 			if (fresh.isRead) return;
@@ -82,7 +85,7 @@ export class CreateNotificationService {
 	
 			if (type === 'follow') this.emailNotificationFollow(notifieeId, await this.usersRepository.findOneByOrFail({ id: data.notifierId! }));
 			if (type === 'receiveFollowRequest') this.emailNotificationReceiveFollowRequest(notifieeId, await this.usersRepository.findOneByOrFail({ id: data.notifierId! }));
-		}, 2000);
+		}, () => { /* aborted, ignore it */ });
 	
 		return notification;
 	}
@@ -114,5 +117,9 @@ export class CreateNotificationService {
 		// TODO: render user information html
 		sendEmail(userProfile.email, i18n.t('_email._receiveFollowRequest.title'), `${follower.name} (@${Acct.toString(follower)})`, `${follower.name} (@${Acct.toString(follower)})`);
 		*/
+	}
+	
+	onApplicationShutdown(signal?: string | undefined): void {
+		this.#shutdownController.abort();
 	}
 }

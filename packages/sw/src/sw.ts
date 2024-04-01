@@ -61,9 +61,13 @@ globalThis.addEventListener('push', ev => {
 				}
 				break;
 				case 'readAllMessagingMessages':
-				for (const n of await globalThis.registration.getNotifications()) {
-					if (n?.data?.type === 'unreadMessagingMessage') n.close();
-				}
+					for (const n of await globalThis.registration.getNotifications()) {
+						if (n?.data?.type === 'unreadMessagingMessage') n.close();
+					}
+					break;
+				// for (const n of await self.registration.getNotifications()) {
+				// 	if (n?.data?.type === 'unreadMessagingMessage') n.close();
+				// }
 				break;
 			case 'readAllAntennas':
 				for (const n of await globalThis.registration.getNotifications()) {
@@ -71,14 +75,14 @@ globalThis.addEventListener('push', ev => {
 				}
 				break;
 			case 'readNotifications':
-				for (const n of await self.registration.getNotifications()) {
+				for (const n of await globalThis.registration.getNotifications()) {
 					if (data.body?.notificationIds?.includes(n.data.body.id)) {
 						n.close();
 					}
 				}
 				break;
 			case 'readAllMessagingMessagesOfARoom':
-				for (const n of await self.registration.getNotifications()) {
+				for (const n of await globalThis.registration.getNotifications()) {
 					if (n.data.type === 'unreadMessagingMessage'
 						&& ('userId' in data.body
 							? data.body.userId === n.data.body.userId

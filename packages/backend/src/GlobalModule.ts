@@ -1,3 +1,4 @@
+import { setTimeout } from 'node:timers/promises';
 import { Global, Inject, Module } from '@nestjs/common';
 import Redis from 'ioredis';
 import { DataSource } from 'typeorm';
@@ -7,14 +8,11 @@ import { loadConfig } from './config.js';
 import { createPostgresDataSource } from './postgres.js';
 import { RepositoryModule } from './models/RepositoryModule.js';
 import type { Provider, OnApplicationShutdown } from '@nestjs/common';
-
 const config = loadConfig();
-
 const $config: Provider = {
 	provide: DI.config,
 	useValue: config,
 };
-
 const $db: Provider = {
 	provide: DI.db,
 	useFactory: async (config) => {
@@ -23,7 +21,6 @@ const $db: Provider = {
 	},
 	inject: [DI.config],
 };
-
 const $redis: Provider = {
 	provide: DI.redis,
 	useFactory: (config) => {
@@ -32,7 +29,6 @@ const $redis: Provider = {
 	},
 	inject: [DI.config],
 };
-
 const $redisSubscriber: Provider = {
 	provide: DI.redisSubscriber,
 	useFactory: (config) => {
@@ -42,7 +38,6 @@ const $redisSubscriber: Provider = {
 	},
 	inject: [DI.config],
 };
-
 @Global()
 @Module({
 	imports: [RepositoryModule],
@@ -57,6 +52,14 @@ export class GlobalModule implements OnApplicationShutdown {
 	) {}
 
 	async onApplicationShutdown(signal: string): Promise<void> {
+		if (process.env.NODE_ENV === 'test') {
+			// XXX:
+			// Shutting down the existing connections causes errors on Jest as
+			// Misskey has asynchronous postgres/redis connections that are not
+			// awaited.
+			// Let's wait for some random time for them to finish.
+			await setTimeout(5000);
+		}
 		await Promise.all([
 			this.db.destroy(),
 			this.redisClient.disconnect(),

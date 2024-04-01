@@ -1,4 +1,5 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { setTimeout } from 'node:timers/promises';
+import { Inject, Injectable, OnApplicationShutdown } from '@nestjs/common';
 import { In, IsNull, Not } from 'typeorm';
 import { DI } from '@/di-symbols.js';
 import type { User } from '@/models/entities/User.js';
@@ -15,7 +16,8 @@ import { AntennaService } from './AntennaService.js';
 import { PushNotificationService } from './PushNotificationService.js';
 
 @Injectable()
-export class NoteReadService {
+export class NoteReadService implements OnApplicationShutdown {
+	#shutdownController = new AbortController();
 	constructor(
 		@Inject(DI.usersRepository)
 		private usersRepository: UsersRepository,
@@ -81,7 +83,7 @@ export class NoteReadService {
 		await this.noteUnreadsRepository.insert(unread);
 	
 		// 2秒経っても既読にならなかったら「未読の投稿がありますよ」イベントを発行する
-		setTimeout(async () => {
+		setTimeout(2000, 'unread note', { signal: this.#shutdownController.signal }).then(async () => {
 			const exist = await this.noteUnreadsRepository.findOneBy({ id: unread.id });
 	
 			if (exist == null) return;
@@ -95,7 +97,8 @@ export class NoteReadService {
 			if (note.channelId) {
 				this.globalEventService.publishMainStream(userId, 'unreadChannel', note.id);
 			}
-		}, 2000);
+		}, () => { /* aborted, ignore it */ });
+	}
 	}	
 
 	@bindThis
@@ -212,5 +215,9 @@ export class NoteReadService {
 				}
 			});
 		}
+	}
+	
+	onApplicationShutdown(signal?: string | undefined): void {
+		this.#shutdownController.abort();
 	}
 }
