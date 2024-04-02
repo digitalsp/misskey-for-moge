@@ -1,20 +1,20 @@
-import { query } from '@/scripts/url';
+import { query, appendQuery } from '@/scripts/url';
 import { url } from '@/config';
 import { instance } from '@/instance';
 
-export function getProxiedImageUrl(imageUrl: string, type?: 'preview', mustOrigin: boolean = false): string {
-	const localProxy = `${url}/proxy`;
-
-	if (imageUrl.startsWith(instance.mediaProxy + '/') || imageUrl.startsWith('/proxy/') || imageUrl.startsWith(localProxy + '/')) {
-		// もう既にproxyっぽそうだったらurlを取り出す
-		imageUrl = (new URL(imageUrl)).searchParams.get('url') ?? imageUrl;
+export function getProxiedImageUrl(imageUrl: string, type?: 'preview'): string {
+	if (imageUrl.startsWith(instance.mediaProxy + '/') || imageUrl.startsWith('/proxy/')) {
+		// もう既にproxyっぽそうだったらsearchParams付けるだけ
+		return appendQuery(imageUrl, query({
+			fallback: '1',
+			...(type ? { [type]: '1' } : {}),
+		}));
 	}
 
-	return `${mustOrigin ? localProxy : instance.mediaProxy}/image.webp?${query({
+	return `${instance.mediaProxy}/image.webp?${query({
 		url: imageUrl,
 		fallback: '1',
 		...(type ? { [type]: '1' } : {}),
-		...(mustOrigin ? { origin: '1' } : {}),
 	})}`;
 }
 

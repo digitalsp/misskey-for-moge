@@ -160,6 +160,7 @@ module.exports = {
 	testMatch: [
 		"<rootDir>/test/unit/**/*.ts",
 		"<rootDir>/src/**/*.test.ts",
+		//"<rootDir>/test/e2e/**/*.ts"
 		"<rootDir>/test/e2e/**/*.ts",
 	],
 

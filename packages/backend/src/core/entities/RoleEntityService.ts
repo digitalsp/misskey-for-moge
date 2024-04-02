@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { Brackets } from 'typeorm';
 import { DI } from '@/di-symbols.js';
+import { Brackets } from 'typeorm';
 import type { RoleAssignmentsRepository, RolesRepository } from '@/models/index.js';
 import { awaitAll } from '@/misc/prelude/await-all.js';
 import type { User } from '@/models/entities/User.js';
@@ -30,12 +30,12 @@ export class RoleEntityService {
 		const role = typeof src === 'object' ? src : await this.rolesRepository.findOneByOrFail({ id: src });
 
 		const assignedCount = await this.roleAssignmentsRepository.createQueryBuilder('assign')
-			.where('assign.roleId = :roleId', { roleId: role.id })
-			.andWhere(new Brackets(qb => { qb
-				.where('assign.expiresAt IS NULL')
-				.orWhere('assign.expiresAt > :now', { now: new Date() });
-			}))
-			.getCount();
+		.where('assign.roleId = :roleId', { roleId: role.id })
+		.andWhere(new Brackets(qb => { qb
+			.where('assign.expiresAt IS NULL')
+			.orWhere('assign.expiresAt > :now', { now: new Date() });
+		}))
+		.getCount();
 
 		const policies = { ...role.policies };
 		for (const [k, v] of Object.entries(DEFAULT_POLICIES)) {

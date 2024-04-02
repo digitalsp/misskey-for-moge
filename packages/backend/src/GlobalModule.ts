@@ -8,14 +8,11 @@ import { loadConfig } from './config.js';
 import { createPostgresDataSource } from './postgres.js';
 import { RepositoryModule } from './models/RepositoryModule.js';
 import type { Provider, OnApplicationShutdown } from '@nestjs/common';
-
 const config = loadConfig();
-
 const $config: Provider = {
 	provide: DI.config,
 	useValue: config,
 };
-
 const $db: Provider = {
 	provide: DI.db,
 	useFactory: async (config) => {
@@ -24,7 +21,6 @@ const $db: Provider = {
 	},
 	inject: [DI.config],
 };
-
 const $redis: Provider = {
 	provide: DI.redis,
 	useFactory: (config) => {
@@ -33,7 +29,6 @@ const $redis: Provider = {
 	},
 	inject: [DI.config],
 };
-
 const $redisSubscriber: Provider = {
 	provide: DI.redisSubscriber,
 	useFactory: (config) => {
@@ -43,7 +38,6 @@ const $redisSubscriber: Provider = {
 	},
 	inject: [DI.config],
 };
-
 @Global()
 @Module({
 	imports: [RepositoryModule],

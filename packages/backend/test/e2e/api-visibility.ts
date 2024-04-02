@@ -474,4 +474,3 @@ describe('API visibility', () => {
 		//#endregion
 	});
 });
-

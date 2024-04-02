@@ -23,7 +23,6 @@
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
-
 Cypress.Commands.add('visitHome', () => {
 	cy.visit('/');
 	cy.get('button', { timeout: 30000 }).should('be.visible');

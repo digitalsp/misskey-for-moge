@@ -13,6 +13,7 @@ import type { OnModuleInit } from '@nestjs/common';
 import type { CustomEmojiService } from '../CustomEmojiService.js';
 import type { UserEntityService } from './UserEntityService.js';
 import type { NoteEntityService } from './NoteEntityService.js';
+import type { UserGroupInvitationEntityService } from './UserGroupInvitationEntityService.js';
 
 const NOTE_REQUIRED_NOTIFICATION_TYPES = new Set(['mention', 'reply', 'renote', 'quote', 'reaction', 'pollEnded'] as (typeof notificationTypes[number])[]);
 
@@ -20,6 +21,7 @@ const NOTE_REQUIRED_NOTIFICATION_TYPES = new Set(['mention', 'reply', 'renote', 
 export class NotificationEntityService implements OnModuleInit {
 	private userEntityService: UserEntityService;
 	private noteEntityService: NoteEntityService;
+	private userGroupInvitationEntityService: UserGroupInvitationEntityService;
 	private customEmojiService: CustomEmojiService;
 
 	constructor(
@@ -36,6 +38,7 @@ export class NotificationEntityService implements OnModuleInit {
 
 		//private userEntityService: UserEntityService,
 		//private noteEntityService: NoteEntityService,
+		//private userGroupInvitationEntityService: UserGroupInvitationEntityService,
 		//private customEmojiService: CustomEmojiService,
 	) {
 	}
@@ -43,6 +46,7 @@ export class NotificationEntityService implements OnModuleInit {
 	onModuleInit() {
 		this.userEntityService = this.moduleRef.get('UserEntityService');
 		this.noteEntityService = this.moduleRef.get('NoteEntityService');
+		this.userGroupInvitationEntityService = this.moduleRef.get('UserGroupInvitationEntityService');
 		this.customEmojiService = this.moduleRef.get('CustomEmojiService');
 	}
 
@@ -57,6 +61,7 @@ export class NotificationEntityService implements OnModuleInit {
 	): Promise<Packed<'Notification'>> {
 		const notification = typeof src === 'object' ? src : await this.notificationsRepository.findOneByOrFail({ id: src });
 		const token = notification.appAccessTokenId ? await this.accessTokensRepository.findOneByOrFail({ id: notification.appAccessTokenId }) : null;
+
 		const noteIfNeed = NOTE_REQUIRED_NOTIFICATION_TYPES.has(notification.type) && notification.noteId != null ? (
 			options._hint_?.packedNotes != null
 				? options._hint_.packedNotes.get(notification.noteId)
@@ -76,6 +81,9 @@ export class NotificationEntityService implements OnModuleInit {
 			...(notification.type === 'reaction' ? {
 				reaction: notification.reaction,
 			} : {}),
+			...(notification.type === 'groupInvited' ? {
+				invitation: this.userGroupInvitationEntityService.pack(notification.userGroupInvitationId!),
+			} : {}),
 			...(notification.type === 'achievementEarned' ? {
 				achievement: notification.achievement,
 			} : {}),
@@ -87,33 +95,34 @@ export class NotificationEntityService implements OnModuleInit {
 		});
 	}
 
-	/**
+	/*
 	 * @param notifications you should join "note" property when fetch from DB, and all notifieeId should be same as meId
 	 */
+
 	@bindThis
 	public async packMany(
 		notifications: Notification[],
 		meId: User['id'],
 	) {
 		if (notifications.length === 0) return [];
-		
+
 		for (const notification of notifications) {
 			if (meId !== notification.notifieeId) {
 				// because we call note packMany with meId, all notifieeId should be same as meId
 				throw new Error('TRY_TO_PACK_ANOTHER_USER_NOTIFICATION');
 			}
+
+			const notes = notifications.map(x => x.note).filter(isNotNull);
+			const packedNotesArray = await this.noteEntityService.packMany(notes, { id: meId }, {
+				detail: true,
+			});
+			const packedNotes = new Map(packedNotesArray.map(p => [p.id, p]));
+
+			return await Promise.all(notifications.map(x => this.pack(x, {
+				_hint_: {
+					packedNotes,
+				},
+			})));
 		}
-
-		const notes = notifications.map(x => x.note).filter(isNotNull);
-		const packedNotesArray = await this.noteEntityService.packMany(notes, { id: meId }, {
-			detail: true,
-		});
-		const packedNotes = new Map(packedNotesArray.map(p => [p.id, p]));
-
-		return await Promise.all(notifications.map(x => this.pack(x, {
-			_hint_: {
-				packedNotes,
-			},
-		})));
 	}
 }

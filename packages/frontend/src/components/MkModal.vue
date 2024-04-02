@@ -405,8 +405,8 @@ defineExpose({
 			margin: auto;
 			padding: 32px;
 			// TODO: mask-imageはiOSだとやたら重い。なんとかしたい
-			-webkit-mask-image: linear-gradient(0deg, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 32px, rgba(0,0,0,1) calc(100% - 32px), rgba(0,0,0,0) 100%);
-			mask-image: linear-gradient(0deg, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 32px, rgba(0,0,0,1) calc(100% - 32px), rgba(0,0,0,0) 100%);
+			-webkit-mask-image: none;
+			mask-image: none;
 			overflow: auto;
 			display: flex;
 

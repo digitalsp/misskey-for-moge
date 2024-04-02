@@ -1,3 +1,4 @@
+import * as Acct from 'misskey-js/built/acct';
 import { defineAsyncComponent } from 'vue';
 import * as misskey from 'misskey-js';
 import { i18n } from '@/i18n';
@@ -11,6 +12,51 @@ import { Router } from '@/nirax';
 
 export function getUserMenu(user: misskey.entities.UserDetailed, router: Router = mainRouter) {
 	const meId = $i ? $i.id : null;
+
+	async function pushList() {
+		const t = i18n.ts.selectList; // なぜか後で参照すると null になるので最初にメモリに確保しておく
+		const lists = await os.api('users/lists/list');
+		if (lists.length === 0) {
+			os.alert({
+				type: 'error',
+				text: i18n.ts.youHaveNoLists,
+			});
+			return;
+		}
+		const { canceled, result: listId } = await os.select({
+			title: t,
+			items: lists.map(list => ({
+				value: list.id, text: list.name,
+			})),
+		});
+		if (canceled) return;
+		os.apiWithDialog('users/lists/push', {
+			listId: listId,
+			userId: user.id,
+		});
+	}
+
+	async function inviteGroup() {
+		const groups = await os.api('users/groups/owned');
+		if (groups.length === 0) {
+			os.alert({
+				type: 'error',
+				text: i18n.ts.youHaveNoGroups,
+			});
+			return;
+		}
+		const { canceled, result: groupId } = await os.select({
+			title: i18n.ts.group,
+			items: groups.map(group => ({
+				value: group.id, text: group.name,
+			})),
+		});
+		if (canceled) return;
+		os.apiWithDialog('users/groups/invite', {
+			groupId: groupId,
+			userId: user.id,
+		});
+	}
 
 	async function toggleMute() {
 		if (user.isMuted) {
@@ -113,24 +159,20 @@ export function getUserMenu(user: misskey.entities.UserDetailed, router: Router 
 		action: () => {
 			os.post({ specified: user });
 		},
-	}, null, {
-		type: 'parent',
+	}, meId !== user.id ? {
+		type: 'link',
+		icon: 'ti ti-messages',
+		text: i18n.ts.startMessaging,
+		to: '/my/messaging/' + Acct.toString(user),
+	} : undefined, null, {
 		icon: 'ti ti-list',
 		text: i18n.ts.addToList,
-		children: async () => {
-			const lists = await os.api('users/lists/list');
-
-			return lists.map(list => ({
-				text: list.name,
-				action: () => {
-					os.apiWithDialog('users/lists/push', {
-						listId: list.id,
-						userId: user.id,
-					});
-				},
-			}));
-		},
-	}] as any;
+		action: pushList,
+	}, meId !== user.id ? {
+		icon: 'ti ti-users',
+		text: i18n.ts.inviteToGroup,
+		action: inviteGroup,
+	} : undefined] as any;
 
 	if ($i && meId !== user.id) {
 		if (iAmModerator) {
@@ -143,32 +185,8 @@ export function getUserMenu(user: misskey.entities.UserDetailed, router: Router 
 
 					return roles.filter(r => r.target === 'manual').map(r => ({
 						text: r.name,
-						action: async () => {
-							const { canceled, result: period } = await os.select({
-								title: i18n.ts.period,
-								items: [{
-									value: 'indefinitely', text: i18n.ts.indefinitely,
-								}, {
-									value: 'oneHour', text: i18n.ts.oneHour,
-								}, {
-									value: 'oneDay', text: i18n.ts.oneDay,
-								}, {
-									value: 'oneWeek', text: i18n.ts.oneWeek,
-								}, {
-									value: 'oneMonth', text: i18n.ts.oneMonth,
-								}],
-								default: 'indefinitely',
-							});
-							if (canceled) return;
-						
-							const expiresAt = period === 'indefinitely' ? null
-								: period === 'oneHour' ? Date.now() + (1000 * 60 * 60)
-								: period === 'oneDay' ? Date.now() + (1000 * 60 * 60 * 24)
-								: period === 'oneWeek' ? Date.now() + (1000 * 60 * 60 * 24 * 7)
-								: period === 'oneMonth' ? Date.now() + (1000 * 60 * 60 * 24 * 30)
-								: null;
-
-							os.apiWithDialog('admin/roles/assign', { roleId: r.id, userId: user.id, expiresAt });
+						action: () => {
+							os.apiWithDialog('admin/roles/assign', { roleId: r.id, userId: user.id });
 						},
 					}));
 				},

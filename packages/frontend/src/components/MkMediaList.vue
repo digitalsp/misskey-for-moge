@@ -13,7 +13,7 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref, useCssModule } from 'vue';
+import { onMounted, ref } from 'vue';
 import * as misskey from 'misskey-js';
 import PhotoSwipeLightbox from 'photoswipe/lightbox';
 import PhotoSwipe from 'photoswipe';
@@ -29,11 +29,8 @@ const props = defineProps<{
 	raw?: boolean;
 }>();
 
-const $style = useCssModule();
-
 const gallery = ref(null);
 const pswpZIndex = os.claimZIndex('middle');
-document.documentElement.style.setProperty('--mk-pswp-root-z-index', pswpZIndex.toString());
 const count = $computed(() => props.mediaList.filter(media => previewable(media)).length);
 
 onMounted(() => {
@@ -57,18 +54,17 @@ onMounted(() => {
 				return item;
 			}),
 		gallery: gallery.value,
-		mainClass: $style.pswp,
 		children: '.image',
 		thumbSelector: '.image',
 		loop: false,
 		padding: window.innerWidth > 500 ? {
 			top: 32,
-			bottom: 90,
+			bottom: 32,
 			left: 32,
 			right: 32,
 		} : {
 			top: 0,
-			bottom: 78,
+			bottom: 0,
 			left: 0,
 			right: 0,
 		},
@@ -86,7 +82,6 @@ onMounted(() => {
 
 		const id = element.dataset.id;
 		const file = props.mediaList.find(media => media.id === id);
-		if (!file) return;
 
 		itemData.src = file.url;
 		itemData.w = Number(file.properties.width);
@@ -203,14 +198,16 @@ const previewable = (file: misskey.entities.DriveFile): boolean => {
 	overflow: hidden; // clipにするとバグる
 	border-radius: 8px;
 }
-
-.pswp {
-	--pswp-root-z-index: var(--mk-pswp-root-z-index, 2000700) !important;
-	--pswp-bg: var(--modalBg) !important;
-}
 </style>
 
 <style lang="scss">
+.pswp {
+	// なぜか機能しない
+  //z-index: v-bind(pswpZIndex);
+	z-index: 2000000;
+	--pswp-bg: var(--modalBg);
+}
+
 .pswp__bg {
 	background: var(--modalBg);
 	backdrop-filter: var(--modalBgFilter);
@@ -222,7 +219,7 @@ const previewable = (file: misskey.entities.DriveFile): boolean => {
 	align-items: center;
 
 	position: absolute;
-	bottom: 20px;
+	bottom: 30px;
 	left: 50%;
 	transform: translateX(-50%);
 

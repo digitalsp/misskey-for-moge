@@ -11,9 +11,9 @@ import { UserCacheService } from '@/core/UserCacheService.js';
 import type { RoleCondFormulaValue } from '@/models/entities/Role.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { StreamMessages } from '@/server/api/stream/types.js';
+import type { OnApplicationShutdown } from '@nestjs/common';
 import { IdService } from '@/core/IdService.js';
 import { GlobalEventService } from '@/core/GlobalEventService.js';
-import type { OnApplicationShutdown } from '@nestjs/common';
 
 export type RolePolicies = {
 	gtlAvailable: boolean;
@@ -135,7 +135,6 @@ export class RoleService implements OnApplicationShutdown {
 						cached.push({
 							...body,
 							createdAt: new Date(body.createdAt),
-							expiresAt: body.expiresAt ? new Date(body.expiresAt) : null,
 						});
 					}
 					break;
@@ -368,7 +367,7 @@ export class RoleService implements OnApplicationShutdown {
 	@bindThis
 	public async unassign(userId: User['id'], roleId: Role['id']): Promise<void> {
 		const now = new Date();
-	
+
 		const existing = await this.roleAssignmentsRepository.findOneBy({ roleId, userId });
 		if (existing == null) {
 			throw new RoleService.NotAssignedError();

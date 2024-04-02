@@ -53,10 +53,10 @@ const parseKeymap = (keymap: Keymap) => Object.entries(keymap).map(([patterns, c
 	return result;
 });
 
-const ignoreElements = ['input', 'textarea'];
+const ignoreElemens = ['input', 'textarea'];
 
 function match(ev: KeyboardEvent, patterns: Action['patterns']): boolean {
-	const key = ev.key.toLowerCase();
+	const key = ev.code.toLowerCase();
 	return patterns.some(pattern => pattern.which.includes(key) &&
 		pattern.ctrl === ev.ctrlKey &&
 		pattern.shift === ev.shiftKey &&
@@ -70,7 +70,7 @@ export const makeHotkey = (keymap: Keymap) => {
 
 	return (ev: KeyboardEvent) => {
 		if (document.activeElement) {
-			if (ignoreElements.some(el => document.activeElement!.matches(el))) return;
+			if (ignoreElemens.some(el => document.activeElement!.matches(el))) return;
 			if (document.activeElement.attributes['contenteditable']) return;
 		}
 
