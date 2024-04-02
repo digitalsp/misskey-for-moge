@@ -9,6 +9,19 @@
 
 You should also include the user name that made the change.
 -->
+## 13.9.1-mogestudio-v1.0.0（2024/04/02）
+
+### Improvements
+- DM（チャット）機能の維持
+- グループ機能の維持
+- KaTeX機能の維持
+- メディアタイムラインの追加
+- その他misskey-dev/misskeyへの13.9.1までの変更の取り込み
+
+### Bugfixes
+- Improvementsに伴う不具合の解消
+- chore: pnpmを8.14.3に更新（Node.js v20への更新の布石）
+
 
 ## 13.8.1 (2023/02/26)
 
