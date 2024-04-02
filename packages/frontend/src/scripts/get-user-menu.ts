@@ -1,3 +1,4 @@
+import * as Acct from 'misskey-js/built/acct';
 import { defineAsyncComponent } from 'vue';
 import * as misskey from 'misskey-js';
 import { i18n } from '@/i18n';

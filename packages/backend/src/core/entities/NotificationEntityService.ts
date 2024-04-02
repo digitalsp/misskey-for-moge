@@ -78,8 +78,9 @@ export class NotificationEntityService implements OnModuleInit {
 			userId: notification.notifierId,
 			user: notification.notifierId ? this.userEntityService.pack(notification.notifier ?? notification.notifierId) : null,
 			...(noteIfNeed != null ? { note: noteIfNeed } : {}),
-			...(notification.type === 'reaction' ? { reaction: notification.reaction,
-		} : {}),
+			...(notification.type === 'reaction' ? {
+				reaction: notification.reaction,
+			} : {}),
 			...(notification.type === 'groupInvited' ? {
 				invitation: this.userGroupInvitationEntityService.pack(notification.userGroupInvitationId!),
 			} : {}),
@@ -117,10 +118,11 @@ export class NotificationEntityService implements OnModuleInit {
 			});
 			const packedNotes = new Map(packedNotesArray.map(p => [p.id, p]));
 
-		return await Promise.all(notifications.map(x => this.pack(x, {
-			_hint_: {
-				packedNotes,
-			},
-		})));
+			return await Promise.all(notifications.map(x => this.pack(x, {
+				_hint_: {
+					packedNotes,
+				},
+			})));
+		}
 	}
 }

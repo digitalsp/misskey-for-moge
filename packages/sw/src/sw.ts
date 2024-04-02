@@ -93,7 +93,7 @@ globalThis.addEventListener('push', ev => {
 				}
 				break;
 			case 'readAntenna':
-				for (const n of await self.registration.getNotifications()) {
+				for (const n of await globalThis.registration.getNotifications()) {
 					if (n?.data?.type === 'unreadAntennaNote' && data.body?.antennaId === n.data.body.antenna.id) {
 						n.close();
 					}
