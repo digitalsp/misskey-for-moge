@@ -15,6 +15,7 @@ import EmMention from '@/components/EmMention.vue';
 import EmEmoji from '@/components/EmEmoji.vue';
 import EmCustomEmoji from '@/components/EmCustomEmoji.vue';
 import EmA from '@/components/EmA.vue';
+import EmKatex from '@/components/EmKatex';
 
 function safeParseFloat(str: unknown): number | null {
 	if (typeof str !== 'string' || str === '') return null;
@@ -420,11 +421,19 @@ export default function (props: MfmProps, { emit }: { emit: SetupContext<MfmEven
 			}
 
 			case 'mathInline': {
-				return [h('code', token.props.formula)];
+				return [h(EmKatex, {
+					key: Math.random(),
+					formula: token.props.formula,
+					displayMode: false,
+				})];
 			}
 
 			case 'mathBlock': {
-				return [h('code', token.props.formula)];
+				return [h(EmKatex, {
+					key: Math.random(),
+					formula: token.props.formula,
+					displayMode: true,
+				})];
 			}
 
 			case 'search': {

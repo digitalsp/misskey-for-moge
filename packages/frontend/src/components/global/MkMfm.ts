@@ -20,6 +20,7 @@ import MkCodeInline from '@/components/MkCodeInline.vue';
 import MkGoogle from '@/components/MkGoogle.vue';
 import MkSparkle from '@/components/MkSparkle.vue';
 import MkA from '@/components/global/MkA.vue';
+import MkKatex from '@/components/global/MkKatex';
 import { prefer } from '@/preferences.js';
 
 function safeParseFloat(str: unknown): number | null {
@@ -452,11 +453,19 @@ export default function (props: MfmProps, { emit }: { emit: SetupContext<MfmEven
 			}
 
 			case 'mathInline': {
-				return [h('code', token.props.formula)];
+				return [h(MkKatex, {
+					key: Math.random(),
+					formula: token.props.formula,
+					displayMode: false,
+				})];
 			}
 
 			case 'mathBlock': {
-				return [h('code', token.props.formula)];
+				return [h(MkKatex, {
+					key: Math.random(),
+					formula: token.props.formula,
+					displayMode: true,
+				})];
 			}
 
 			case 'search': {
