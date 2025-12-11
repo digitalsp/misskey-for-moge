@@ -34,9 +34,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 							<MkRadios v-model="overridedDeviceKind">
 								<template #label><SearchLabel>{{ i18n.ts.overridedDeviceKind }}</SearchLabel></template>
 								<option :value="null">{{ i18n.ts.auto }}</option>
-								<option value="smartphone"><i class="ti ti-device-mobile"/> {{ i18n.ts.smartphone }}</option>
-								<option value="tablet"><i class="ti ti-device-tablet"/> {{ i18n.ts.tablet }}</option>
-								<option value="desktop"><i class="ti ti-device-desktop"/> {{ i18n.ts.desktop }}</option>
+								<option value="smartphone">{{ i18n.ts.smartphone }} (phone)</option>
+								<option value="tablet">{{ i18n.ts.tablet }} (tablet)</option>
+								<option value="desktop">{{ i18n.ts.desktop }} (desktop)</option>
 							</MkRadios>
 						</SearchMarker>
 
@@ -388,10 +388,10 @@ SPDX-License-Identifier: AGPL-3.0-only
 							<MkPreferenceContainer k="notificationPosition">
 								<MkRadios v-model="notificationPosition">
 									<template #label><SearchLabel>{{ i18n.ts.position }}</SearchLabel></template>
-									<option value="leftTop"><i class="ti ti-align-box-left-top"></i> {{ i18n.ts.leftTop }}</option>
-									<option value="rightTop"><i class="ti ti-align-box-right-top"></i> {{ i18n.ts.rightTop }}</option>
-									<option value="leftBottom"><i class="ti ti-align-box-left-bottom"></i> {{ i18n.ts.leftBottom }}</option>
-									<option value="rightBottom"><i class="ti ti-align-box-right-bottom"></i> {{ i18n.ts.rightBottom }}</option>
+									<option value="leftTop">{{ i18n.ts.leftTop }} (LT)</option>
+									<option value="rightTop">{{ i18n.ts.rightTop }} (RT)</option>
+									<option value="leftBottom">{{ i18n.ts.leftBottom }} (LB)</option>
+									<option value="rightBottom">{{ i18n.ts.rightBottom }} (RB)</option>
 								</MkRadios>
 							</MkPreferenceContainer>
 						</SearchMarker>
@@ -400,8 +400,8 @@ SPDX-License-Identifier: AGPL-3.0-only
 							<MkPreferenceContainer k="notificationStackAxis">
 								<MkRadios v-model="notificationStackAxis">
 									<template #label><SearchLabel>{{ i18n.ts.stackAxis }}</SearchLabel></template>
-									<option value="vertical"><i class="ti ti-carousel-vertical"></i> {{ i18n.ts.vertical }}</option>
-									<option value="horizontal"><i class="ti ti-carousel-horizontal"></i> {{ i18n.ts.horizontal }}</option>
+									<option value="vertical">{{ i18n.ts.vertical }} (vertical)</option>
+									<option value="horizontal">{{ i18n.ts.horizontal }} (horizontal)</option>
 								</MkRadios>
 							</MkPreferenceContainer>
 						</SearchMarker>
@@ -572,10 +572,10 @@ SPDX-License-Identifier: AGPL-3.0-only
 						<SearchMarker :keywords="['font', 'size']">
 							<MkRadios v-model="fontSize">
 								<template #label><SearchLabel>{{ i18n.ts.fontSize }}</SearchLabel></template>
-								<option :value="null"><span style="font-size: 14px;">Aa</span></option>
-								<option value="1"><span style="font-size: 15px;">Aa</span></option>
-								<option value="2"><span style="font-size: 16px;">Aa</span></option>
-								<option value="3"><span style="font-size: 17px;">Aa</span></option>
+								<option :value="null">14px</option>
+								<option value="1">15px</option>
+								<option value="2">16px</option>
+								<option value="3">17px</option>
 							</MkRadios>
 						</SearchMarker>
 
