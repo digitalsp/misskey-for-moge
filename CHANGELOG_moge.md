@@ -1,3 +1,12 @@
+## 2025.12.2-mogestudio-v1.0.2
+### General
+- ベースバージョンを2025.12.2に
+	- [本家の更新情報](https://github.com/misskey-dev/misskey/releases/tag/2025.12.2)
+- package.jsonを変更し、UI上のバージョンが2025.12.2-mogestudio-v1.0.2となるように
+- 今後のAI開発のためにAGENTS.mdを追加（暫定版）
+- README.mdを更新し、本家と大きく異なるものに
+- mogestudioのCHANGELOG.mdであるCHANGELOG_moge.mdを追加
+
 ## 2025.12.0-mogestudio-v1.0.1
 
 ### General
