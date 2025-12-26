@@ -80,3 +80,9 @@ vite.config.local-dev.ts.timestamp-*
 
 # VSCode addon
 .favorites.json
+
+# DB files
+*.db
+
+# cache files
+.cache
