@@ -1,3 +1,11 @@
+## 2026.5.1-mogestudio-v1.0.3
+### General
+- ベースバージョンを2026.5.1に更新
+	- [本家の更新情報](https://github.com/misskey-dev/misskey/releases/tag/2026.5.1)
+- package.jsonを変更し、UI上のバージョンが2026.5.1-mogestudio-v1.0.3となるように
+- fork固有のREADME.mdとfrontend-embedのlocale inliner調整を維持
+- 依存関係とlockfileは本家2026.5.1を基準に更新
+
 ## 2025.12.2-mogestudio-v1.0.2
 ### General
 - ベースバージョンを2025.12.2に
