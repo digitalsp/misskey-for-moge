@@ -9,4 +9,5 @@ export function assertNever(x: never): never {
 }
 
 export function assertType<T>(node: unknown): asserts node is T {
+	void node;
 }

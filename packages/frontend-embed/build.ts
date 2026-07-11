@@ -4,7 +4,7 @@ import path from 'node:path';
 import { execa } from 'execa';
 import locales from 'i18n';
 // NOTE: use the TypeScript source to avoid stale compiled copies in workspace/node_modules
-import { LocaleInliner } from '../frontend-builder/locale-inliner.ts'
+import { LocaleInliner } from '../frontend-builder/locale-inliner.ts';
 import { createLogger } from '../frontend-builder/logger';
 
 // requires node 21 or later

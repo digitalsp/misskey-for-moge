@@ -87,3 +87,6 @@ vite.config.local-dev.ts.timestamp-*
 
 # cache files
 .cache
+
+# Affinity
+*.af~lock~

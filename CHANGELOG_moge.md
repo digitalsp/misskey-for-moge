@@ -1,3 +1,28 @@
+## 2026.6.0-mogestudio-v1.0.4
+
+### General
+
+- ベースバージョンをMisskey 2026.6.0へ更新
+  - [本家Misskey 2026.6.0の更新情報](https://github.com/misskey-dev/misskey/releases/tag/2026.6.0)
+  - 2026.5.2、2026.5.3、2026.5.4および2026.6.0までの正式リリースに含まれる変更を取り込み
+- UIおよびAPIで表示されるフォークのバージョンを`2026.6.0-mogestudio-v1.0.4`へ更新
+- 本家の依存関係更新に追従し、パッケージマネージャーをpnpm 11.5.2へ更新
+- 本家で廃止された`fluent-emojis` submoduleを削除し、`@misskey-dev/emoji-assets`を利用する新しい構成へ移行
+- 本家で追加されたAIエージェント向け開発ガイドと検証手順を取り込み、このフォーク固有のセットアップおよびテスト方針を併記
+- 本家のAPI変更に合わせて`misskey-js`の型定義と自動生成コードを再生成
+
+### Client
+
+- 独自改変のKaTeXによる数式表示を通常のフロントエンドと埋め込み表示の両方で維持
+- KaTeXの型定義を追加し、Misskey 2026.6.0のTypeScriptおよびVueの更新後も型検査と本番ビルドが通るように調整
+- 埋め込みフロントエンドのlocale inlinerについて、i18n識別子を直接参照するチャンクではビルドを中断せず、従来どおり実行時参照へフォールバックする独自挙動を維持
+- 本家2026.6.0に含まれていたfrontend-builderとfrontend-embedの型不整合を修正し、ルートの`pnpm lint`が成功する状態に調整
+
+### 検証
+
+- `pnpm install --frozen-lockfile`、`pnpm build-misskey-js-with-types`、`pnpm lint`、`pnpm build`が成功することを確認
+- frontendの163テスト、misskey-jsの14テストおよび型定義テストが成功することを確認
+
 ## 2026.5.1-mogestudio-v1.0.3
 ### General
 - ベースバージョンを2026.5.1に更新
