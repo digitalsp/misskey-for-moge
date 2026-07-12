@@ -10,6 +10,8 @@
 - 本家で廃止された`fluent-emojis` submoduleを削除し、`@misskey-dev/emoji-assets`を利用する新しい構成へ移行
 - 本家で追加されたAIエージェント向け開発ガイドと検証手順を取り込み、このフォーク固有のセットアップおよびテスト方針を併記
 - 本家のAPI変更に合わせて`misskey-js`の型定義と自動生成コードを再生成
+- 本家Stableの調査と取り込みから、実運用環境でのバックアップ、`git pull`、Dockerビルド、migration、再起動、動作確認、切り戻しまでを説明する詳細な日本語運用手順書を追加
+- 本家専用のmisskey-jsおよびDocker Hub公開workflowがこのフォークで誤作動しないよう、`misskey-dev/misskey`でのみ公開jobを実行する安全条件を追加
 
 ### Client
 
