@@ -6,9 +6,11 @@
 
 - `origin`は`https://github.com/digitalsp/misskey-for-moge.git`、`upstream`は`https://github.com/misskey-dev/misskey.git`を指します。
 - 公開用の本線は`mogesky`です。本家追従作業は`upgrade/<本家バージョン>`という専用ブランチで行い、検証後に`mogesky`へマージします。
-- フォークのリリースバージョンは`<本家バージョン>-mogestudio-v<フォークバージョン>`形式を使用します。例は`2026.6.0-mogestudio-v1.0.4`です。
+- フォークのリリースバージョンは`<本家バージョン>-mogestudio-v<フォークバージョン>`形式を使用します。例は`2026.9.1-mogestudio-v1.0.5`です。
 - フォーク固有の変更履歴は`CHANGELOG_moge.md`へ日本語で記録します。本家の`CHANGELOG.md`は本家から取り込んだ内容を尊重し、フォーク固有の説明を混在させません。
-- 通常のフロントエンドと埋め込みフロントエンドに追加したKaTeX数式表示、frontend-embedのlocale inlinerのフォールバック、フォークを示すREADMEとrepository URLは、現在維持すべき主要な独自差分です。作業開始時には必ず実際の差分を再確認し、この一覧だけを信用しないでください。
+- 現在維持すべき主要な独自差分は、通常のフロントエンドと埋め込みフロントエンドのKaTeX数式表示、frontend-embedのlocale inlinerのフォールバック、frontend-embedのビルドがTypeScriptソースを直接参照する挙動、フォークを示すREADMEとrepository URL、本家専用公開workflowのrepositoryガードです。作業開始時には必ず実際の差分を再確認し、この一覧だけを信用しないでください。
+- 独自差分の一部は本家の後続リリースに取り込まれることがあります。2026.9.1では、frontend-embedの型不整合修正（EmNote、EmPagination、EmReactionsViewer、I18n、custom-emojis、frontend-builderの`assertType`）が本家に取り込まれたため、重複する独自パッチを削除しました。本家側に同等の修正がある場合は、本家実装を採用して独自パッチを減らします。
+- 依存関係は本家と同じバージョンを使用します。2026.9.1ではpnpm 11.25.0、Node.js 22.22.2 / 24.17.0 / 26.4.0以上が要件です。`package.json`の`packageManager`と異なるpnpmでlockfileを生成しないでください。
 - PostgreSQL、Redis、FFmpegが必要です。backendテストでは`.config/test.yml`と専用のPostgreSQL、Redis、必要に応じてMeilisearchを使用します。
 
 ## 1. 作業開始前の安全確認
@@ -51,7 +53,12 @@ git show --no-patch --decorate <対象Stableタグ>
 git merge-base --is-ancestor <対象Stableタグ> upstream/master
 ```
 
-GitHub上の本家リリースノートも確認し、必要なNode.js、pnpm、PostgreSQL、Redisのバージョン変更、破壊的変更、必須マイグレーション、廃止機能を把握します。タグ名だけで更新の安全性を判断してはいけません。
+GitHub上の本家リリースノートも確認し、必要なNode.js、pnpm、PostgreSQL、Redisのバージョン変更、破壊的変更、必須マイグレーション、廃止機能を把握します。タグ名だけで更新の安全性を判断してはいけません。特に次の項目は実際の運用に影響するため、`CHANGELOG.md`の`### Note`を必ず読みます。
+
+- Node.jsとDockerイメージのベースイメージ、およびネイティブライブラリ（sharpなど）のCPU要件の変更。
+- センシティブメディア判定のように、本体から外部サービスへ処理が分離された機能の有無。
+- 設定ファイルの構文や必須項目の変更（YAMLパーサーの厳格化を含む）。
+- APIの削除や権限要件の変更。
 
 ## 3. 現在の独自差分を記録する
 
@@ -141,27 +148,56 @@ KaTeXについては、通常フロントエンドと埋め込みフロントエ
 - `throwOnError: false`、`trust: false`など、壊れた式や危険な入力に対する既存の安全設定が維持されること。
 - frontend-embedのビルドでも動的importとlocale inlinerが両立すること。
 
-## 7. 自動生成物を更新する
+`tsconfig.json`やビルド設定が本家側と重複していないことも確認します。2026.9.1では、フォークが追加していた`packages/frontend-embed/tsconfig.json`の`baseUrl`がTypeScript 6でエラーになり、`skipLibCheck`が本家と重複していたため、どちらも削除しました。TypeScriptのメジャー更新を含む追従では、`baseUrl`など非推奨オプションが残っていないか確認します。
 
-本家更新でbackend API、endpoint、meta、paramDef、response型が変わっている場合は、`misskey-js`を必ず再生成します。Stable追従ではAPI変更が含まれる可能性が高いため、原則として毎回実行します。
+本家専用の公開workflowが残っていること、`misskey-dev/misskey`以外のリポジトリでは実行されない条件が維持されていることも確認します。
 
 ```bash
+grep -rn "github.repository ==" .github/workflows/
+git diff <対象Stableタグ> -- .github/workflows/docker.yml .github/workflows/docker-develop.yml .github/workflows/on-release-created.yml .github/workflows/storybook.yml
+```
+
+## 7. 自動生成物を更新する
+
+本家更新でbackend API、endpoint、meta、paramDef、response型が変わっている場合は、`misskey-js`を必ず再生成します。Stable追従ではAPI変更が含まれる可能性が高いため、原則として毎回実行します。`generate-api-json`はbackendのビルド成果物と`misskey-js`のビルド成果物を読み込むため、先に全体ビルドを済ませてから実行します。
+
+```bash
+pnpm build
 pnpm build-misskey-js-with-types
 ```
 
-実行後は`packages/misskey-js/src/autogen/`、`packages/misskey-js/etc/misskey-js.api.md`などの差分を確認します。生成コマンドを実行した結果が大量に消える、または対象Stableタグと無関係なAPIが消える場合は、backendのビルド設定や`.config`の読み込みを確認します。
+実行後は`packages/misskey-js/src/autogen/`、`packages/misskey-js/etc/misskey-js.api.md`などの差分を確認します。生成コマンドを実行した結果が大量に消える、または対象Stableタグと無関係なAPIが消える場合は、backendのビルド設定や`.config`の読み込みを確認します。本家側の生成結果と一致していれば、その状態を検証結果として記録します。
+
+```bash
+git diff --stat <対象Stableタグ> -- packages/misskey-js
+```
 
 ## 8. ローカル検証を行う
 
-最低限、依存固定インストール、lint、主要テスト、全体ビルドを実行します。
+最低限、依存固定インストール、lint、主要テスト、全体ビルドを実行します。`.config/default.yml`が必要なコマンドのために、本家CIと同じく`example.yml`から作成します。
 
 ```bash
+cp .config/example.yml .config/default.yml
 pnpm install --frozen-lockfile
-pnpm lint
-pnpm --filter frontend test
-pnpm --filter frontend-embed test
-pnpm --filter misskey-js test
 pnpm build
+pnpm --filter frontend lint
+pnpm --filter frontend-embed lint
+pnpm --filter frontend-builder lint
+node scripts/check-spdx.mjs
+pnpm --filter frontend test
+pnpm --filter misskey-js test
+```
+
+スキルや`AGENTS.md`が求める範囲に応じて、変更したファイルへ`eslint --quiet`を実行します。リポジトリ全体の`pnpm lint`は`pnpm --no-bail -r lint`と`pnpm check-dts`を順に実行するため、時間はかかりますが、依存関係や型定義を広く変更した場合は実行します。
+
+```bash
+pnpm lint
+```
+
+E2Eテストは本家でCypressからPlaywrightへ移行しました。frontend-embedには独立したテストスクリプトがないため、`pnpm --filter frontend-embed test`は実行しません。
+
+```bash
+pnpm --filter frontend test:e2e
 ```
 
 backendテスト用設定とサービスを準備します。
@@ -180,6 +216,16 @@ docker compose -f packages/backend/test/compose.yml down
 ```
 
 ポート競合、Docker利用不可、PostgreSQLやRedisの未起動など環境要因でbackendテストを実行できない場合は、失敗をコードの不具合と混同せず、接続先、ポート、実行できなかったテスト範囲を記録します。ただし、環境要因を理由にlint、型検査、全体ビルドまで省略してはいけません。
+
+Dockerを利用できない環境でも、`.config/test.yml`が指定する接続先（既定ではPostgreSQL 54312、Redis 56312）にユーザー権限でテスト用サービスを起動できる場合があります。PostgreSQLは`initdb`と`pg_ctl`で一時クラスタを作成でき、Redisは公式ソースからビルドして起動できます。この方法でテストを実行した場合は、ホストへ常設のサービスを追加していないこと、テスト後に停止したことを記録します。
+
+```bash
+mkdir -p <一時ディレクトリ>
+/usr/lib/postgresql/<バージョン>/bin/initdb -D <一時ディレクトリ>/pgdata -U postgres --auth=trust -E UTF8
+/usr/lib/postgresql/<バージョン>/bin/pg_ctl -D <一時ディレクトリ>/pgdata -o "-p 54312 -k <一時ディレクトリ> -c listen_addresses=127.0.0.1" -l <一時ディレクトリ>/pg.log start
+/usr/lib/postgresql/<バージョン>/bin/createdb -h 127.0.0.1 -p 54312 -U postgres test-misskey
+./src/redis-server --port 56312 --daemonize yes --save '' --dir <一時ディレクトリ>
+```
 
 entityまたはmigrationが変更された場合は、テストDBが利用できる状態でマイグレーション検査も行います。
 
@@ -282,9 +328,9 @@ gh release create <フォークのリリースバージョン> -R digitalsp/miss
 
 ## 13. 本家専用の公開workflowについて
 
-本家から取り込んだ`on-release-created.yml`と`docker.yml`は、npm上の本家`misskey-js`パッケージとDocker Hub上の`misskey/misskey`イメージを公開するためのworkflowです。このフォークには本家公開用の資格情報がなく、本家のパッケージ名やDockerイメージ名へ公開してはいけません。
+本家から取り込んだ`on-release-created.yml`、`docker.yml`、`docker-develop.yml`、`storybook.yml`は、npm上の本家`misskey-js`パッケージとDocker Hub上の`misskey/misskey`イメージ、およびChromaticのStorybookを公開するためのworkflowです。このフォークには本家公開用の資格情報がなく、本家のパッケージ名やDockerイメージ名へ公開してはいけません。
 
-そのため、これらのjobには`github.repository == 'misskey-dev/misskey'`という条件を設定し、`digitalsp/misskey-for-moge`では安全にskipさせます。このガードは今後の本家追従で競合や上書きにより失われていないか必ず確認します。このフォーク独自のnpmパッケージやDockerイメージを将来公開する場合は、本家用workflowの条件を外すのではなく、フォーク専用のパッケージ名、レジストリ名、secret名、権限、provenance方針を決めた別workflowとして設計します。
+そのため、これらのjobには`github.repository == 'misskey-dev/misskey'`という条件を設定し、`digitalsp/misskey-for-moge`では安全にskipさせます。2026.9.1追従時点では、`on-release-created.yml`の`publish-misskey-js`、`docker.yml`の`build`と`merge`、`docker-develop.yml`の`build`、`storybook.yml`の該当jobに条件が設定されています。本家は新しい公開workflowを追加することがあるため、追従のたびに`grep -rn "github.repository ==" .github/workflows/`で全workflowを確認し、公開処理を行うjobに条件があるか、条件の対象リポジトリが`misskey-dev/misskey`のままかを確認します。このガードは今後の本家追従で競合や上書きにより失われていないか必ず確認します。このフォーク独自のnpmパッケージやDockerイメージを将来公開する場合は、本家用workflowの条件を外すのではなく、フォーク専用のパッケージ名、レジストリ名、secret名、権限、provenance方針を決めた別workflowとして設計します。
 
 ## 14. 実運用環境をgit pullとDockerビルドで更新する
 
@@ -293,6 +339,13 @@ gh release create <フォークのリリースバージョン> -R digitalsp/miss
 ### 14.1 更新内容とメンテナンス時間を確認する
 
 更新前に、フォークのGitHub Release、本家MisskeyのRelease、`CHANGELOG_moge.md`、本家`CHANGELOG.md`を確認します。新しいmigration、Node.jsやpnpmの変更、PostgreSQLやRedisの必須バージョン、設定項目の追加、削除された機能を把握し、必要な停止時間を見積もります。
+
+2026.7.0以降の本家Stableでは、次の変更が実運用環境に影響します。該当するかどうかを更新前に判断してください。
+
+- Node.jsの最低動作バージョンが22.22.2、24.17.0、26.4.0へ引き上げられ、DockerイメージのベースもNode.js 26.4.0-trixieへ更新されました。`.node-version`とDockerfileの`NODE_VERSION`を確認し、独自にイメージをビルドしている環境ではベースイメージの更新を計画します。
+- 画像処理ライブラリsharpのシステム要件が変更され、SSE4.2命令セットを持たないx86_64 CPUでは動作しなくなります。仮想マシンや古いハードウェアで稼働している場合は、更新前にCPUの対応状況を確認します。
+- センシティブメディアの判定が本体同梱のnsfwjsから外部サービス（sensitive-detector）へ分離されました。この機能を利用している場合は、外部サービスを用意し、コントロールパネルの設定で接続先を指定します。未設定の場合、判定は行われません。
+- YAMLパーサーが厳格化されました。`allowedPrivateNetworks`のように配列を`[`と`]`で囲む旧記法は構文エラーになる可能性があるため、ブロック形式へ書き換えます。更新前に`docker compose run --rm --no-deps web pnpm start`などで設定読み込みを確認できると安全です。
 
 Dockerfileの`CMD`は`pnpm run migrateandstart`であり、webコンテナ起動時にmigrationを実行してからMisskeyを起動します。ただし、複数のwebコンテナが同時にmigrationを実行することや、旧コードが動作している最中に新しいスキーマへ変更することを避けるため、この手順ではwebサービスを停止し、1個の一時コンテナで明示的にmigrationを実行してから新しいwebコンテナを起動します。
 
@@ -389,6 +442,14 @@ docker compose -f <運用Composeファイル> config --services
 ```
 
 `.config/default.yml`または実運用で使用する設定ファイルについて、DB、Redis、Meilisearch、オブジェクトストレージ、URL、port、proxy設定が現在の環境と一致することを確認します。リリースで新しい設定項目が追加された場合は、本家の`.config/example.yml`との差分を見て必要な値だけを実運用設定へ追加します。本番のsecretをGitへ追加しません。
+
+2026.7.0以降、本家のYAMLパーサーはより厳格になっています。配列を`[`と`]`で囲む旧記法が残っていると起動時に構文エラーになるため、実際の設定ファイルを本家の`example.yml`と比較し、記法を揃えます。
+
+```bash
+diff -u .config/example.yml .config/default.yml
+```
+
+`sentryForBackend.disabledIntegrations`、`options.tracePropagationTargets`、`logging.format`、`logging.level`、`logging.domains`など、2026.7.0以降に追加された設定項目は必要な場合だけ追加します。`logging.level`の既定値は本番環境で`info`です。ログ量が増えすぎる場合は`logging.domains`で抑制します。
 
 ### 14.7 現在のwebイメージを切り戻し用に保持する
 
@@ -546,11 +607,15 @@ GitHub Releaseの説明に重大な誤りがある場合は本文を修正でき
 - [ ] `upgrade/<対象Stableタグ>`ブランチで本家タグをマージした。
 - [ ] 競合を本家の新構成を基準に意味を確認して解消した。
 - [ ] KaTeX、埋め込み表示、locale inliner、repository表記を確認した。
-- [ ] 本家専用npm／Docker公開jobのrepositoryガードを確認した。
+- [ ] 本家専用npm／Docker／Storybook公開jobのrepositoryガードを確認した。
+- [ ] 本家に取り込まれた独自パッチが残っていないか確認した。
 - [ ] pnpmロックファイルを指定pnpmバージョンで再生成した。
-- [ ] `pnpm build-misskey-js-with-types`を実行した。
-- [ ] `pnpm lint`、主要テスト、`pnpm build`を実行した。
+- [ ] `pnpm build`の後に`pnpm build-misskey-js-with-types`を実行し、生成差分を確認した。
+- [ ] `node scripts/check-spdx.mjs`が`SPDX: OK`を返した。
+- [ ] 変更したパッケージのlint、主要テスト、`pnpm build`を実行した。
 - [ ] backendテストとmigration検査を実行したか、実行不能な環境要因を記録した。
+- [ ] Node.jsとpnpmの要件変更、外部サービスへの機能分離、sharpなどのCPU要件を確認した。
+- [ ] 設定ファイルが本家の新しいYAML構文に適合しているか確認した。
 - [ ] `package.json`と`CHANGELOG_moge.md`を日本語で更新した。
 - [ ] アップグレードブランチと`mogesky`のtreeが一致することを確認した。
 - [ ] push後のコード検証CIがすべて成功した。

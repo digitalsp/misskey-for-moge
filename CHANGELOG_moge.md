@@ -1,3 +1,40 @@
+## 2026.9.1-mogestudio-v1.0.5
+
+### General
+
+- ベースバージョンをMisskey 2026.9.1へ更新
+  - [本家Misskey 2026.9.1の更新情報](https://github.com/misskey-dev/misskey/releases/tag/2026.9.1)
+  - 2026.7.0、2026.9.0、2026.9.1の正式リリースに含まれる変更を取り込み
+  - 2026.6.1と2026.8.0には正式リリースが存在しないため、alpha、beta、rcは取り込まない
+- UIおよびAPIで表示されるフォークのバージョンを`2026.9.1-mogestudio-v1.0.5`へ更新
+- 本家の依存関係更新に追従し、パッケージマネージャーをpnpm 11.5.2からpnpm 11.25.0へ更新
+- 本家でNode.jsの最低動作バージョンが22.22.2、24.17.0、26.4.0へ引き上げられ、DockerイメージがNode.js 26.4.0-trixieへ更新されたため、運用と検証の手順書へ要件を追記
+- 本家でセンシティブメディアの判定が外部サービス（sensitive-detector）方式へ変更され、nsfwjsとTensorFlowが同梱されなくなったため、該当機能を使う場合の対応を手順書へ追記
+- 本家でYAMLパーサーが厳格化され、`allowedPrivateNetworks`など一部設定の記述方法が変わったため、更新時の設定確認手順へ追記
+- 本家でE2EテストがCypressからPlaywrightへ移行し、frontend-embedのテストスクリプトが廃止されたため、検証手順を更新
+- 本家のAPI変更に合わせて`misskey-js`の型定義と自動生成コードを再生成し、生成結果が本家2026.9.1と一致することを確認
+- フォーク独自の依存（katex、@types/katex、magic-string、cli-highlight）を本家2026.9.1の依存一覧へ再適用し、lockfileは本家側を基準にpnpm 11.25.0で再生成
+- 本家専用の公開workflowについて、`misskey-dev/misskey`以外のリポジトリでは実行しない安全条件が維持されていることを確認
+
+### Client
+
+- 独自改変のKaTeXによる数式表示を通常のフロントエンドと埋め込み表示の両方で維持し、本番ビルドにKaTeXのコードとCSSが含まれることを確認
+- 埋め込みフロントエンドのlocale inlinerについて、i18n識別子を直接参照するチャンクではビルドを中断せず、実行時参照へフォールバックする独自挙動を維持
+- 埋め込みフロントエンドの`build.ts`が、ワークスペース内の古いコンパイル済みファイルではなくTypeScriptソースを直接参照する独自挙動を維持
+- 本家2026.9.1に取り込まれた型不整合の修正（EmNote、EmPagination、EmReactionsViewer、I18n、custom-emojis、frontend-builderの`assertType`）と重複していた独自パッチを削除し、本家実装へ統合
+- frontend-embedの`tsconfig.json`から、TypeScript 6でエラーになる独自の`baseUrl`指定と、本家と重複する`skipLibCheck`を削除
+
+### 検証
+
+- `pnpm install --frozen-lockfile`、`pnpm build`、`pnpm build-misskey-js-with-types`が成功し、`misskey-js`の生成結果が本家2026.9.1と一致することを確認
+- frontend、frontend-embed、frontend-builder、backendの`lint`（型検査とESLint）が成功
+- frontendの152テスト、misskey-jsの14テストと型定義テストが成功
+- backendのunit testは794件（うち`SearchService`の32件はMeilisearchを使用）が成功し、18件がskip、e2e testは1334件が成功して2件がskip、20件がtodo
+- `pnpm --filter backend check-migrations`がpending DDLなしで成功
+- `node scripts/check-shipping.mjs`でSPDXと変更ファイルのlintが成功
+- Dockerが利用できない環境のため、テスト用コンテナは起動できなかった。backendのunit testとe2e testは、`.config/test.yml`が指定するPostgreSQLとRedis、およびMeilisearchをユーザー権限で一時的に起動して実行し、テスト後に停止した
+- federation test（`pnpm --filter backend test:fed`）は複数インスタンスとDockerを必要とするため未実行
+
 ## 2026.6.0-mogestudio-v1.0.4
 
 ### General

@@ -27,6 +27,10 @@ const initialReactions = new Set(Object.keys(props.note.reactions));
 const reactions = ref<[string, number][]>([]);
 const hasMoreReactions = ref(false);
 
+if (props.note.myReaction != null && !(props.note.myReaction in props.note.reactions)) {
+	reactions.value.push([props.note.myReaction, props.note.reactions[props.note.myReaction]]);
+}
+
 function onMockToggleReaction(emoji: string, count: number) {
 	const i = reactions.value.findIndex((item) => item[0] === emoji);
 	if (i < 0) return;
