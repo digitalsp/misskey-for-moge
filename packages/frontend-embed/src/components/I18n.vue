@@ -10,7 +10,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 <script setup lang="ts" generic="T extends string | ParameterizedString">
 import { computed, h } from 'vue';
 import type { ParameterizedString } from 'i18n';
-import type { VNodeChild } from 'vue';
 
 const props = withDefaults(defineProps<{
 	src: T;
@@ -47,7 +46,9 @@ const parsed = computed(() => {
 });
 
 const render = () => {
-	const dynamicSlots = slots as Record<string, (() => VNodeChild) | undefined>;
-	return h(props.tag, parsed.value.map(x => typeof x === 'string' ? (props.textTag ? h(props.textTag, x) : x) : dynamicSlots[x.arg]?.()));
+	// slotsの型はTの条件型で決まり文字列インデックスアクセスができないため、
+	// frontend側の同名コンポーネント (packages/frontend/src/components/global/I18n.vue) と同じくanyでキャストする
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	return h(props.tag, parsed.value.map(x => typeof x === 'string' ? (props.textTag ? h(props.textTag, x) : x) : (slots as any)[x.arg]()));
 };
 </script>
